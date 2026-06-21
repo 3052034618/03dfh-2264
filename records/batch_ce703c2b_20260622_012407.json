@@ -1,0 +1,4255 @@
+{
+  "batch_id": "ce703c2b",
+  "batch_name": "周检_W25",
+  "start_time": "2026-06-22T01:24:03.779292",
+  "end_time": "2026-06-22T01:24:06.985597",
+  "total_count": 63,
+  "passed_count": 20,
+  "failed_count": 43,
+  "rule_category": "light",
+  "deal_filter": "all",
+  "source_dir": "D:\\trae-bz\\TraeProjects\\2264\\data\\samples",
+  "results": [
+    {
+      "file_path": "D:\\trae-bz\\TraeProjects\\2264\\data\\samples\\东城店_张美丽_20240611_121212_undealt.wav",
+      "file_name": "东城店_张美丽_20240611_121212_undealt.wav",
+      "store": "东城店",
+      "consultant": "张美丽",
+      "record_date": "20240611",
+      "record_time": "121212",
+      "deal_status": "undealt",
+      "duration_seconds": 283,
+      "category": "light",
+      "total_score": 55,
+      "ban_word_hits": [],
+      "interruption_count": 0,
+      "price_validity_clear": false,
+      "preop_mentioned": false,
+      "postop_mentioned": false,
+      "issues": [
+        "价格优惠未说明有效期",
+        "未充分提及术前检查",
+        "未充分提及术后护理"
+      ],
+      "check_results": [
+        {
+          "rule_id": "ban_words",
+          "rule_name": "禁用词检测",
+          "passed": true,
+          "score": 20,
+          "detail": "未检测到禁用词",
+          "evidence": []
+        },
+        {
+          "rule_id": "interruption",
+          "rule_name": "打断顾客次数",
+          "passed": true,
+          "score": 20,
+          "detail": "打断 0 次，在合理范围内",
+          "evidence": []
+        },
+        {
+          "rule_id": "price_validity",
+          "rule_name": "价格优惠有效期",
+          "passed": false,
+          "score": 5,
+          "detail": "提及价格优惠但未说明有效期",
+          "evidence": []
+        },
+        {
+          "rule_id": "preop_check",
+          "rule_name": "术前检查提及",
+          "passed": false,
+          "score": 5,
+          "detail": "未充分提及术前检查/评估",
+          "evidence": []
+        },
+        {
+          "rule_id": "postop_care",
+          "rule_name": "术后护理提及",
+          "passed": false,
+          "score": 5,
+          "detail": "未充分提及术后护理/注意事项",
+          "evidence": []
+        }
+      ]
+    },
+    {
+      "file_path": "D:\\trae-bz\\TraeProjects\\2264\\data\\samples\\东城店_张美丽_20240612_151117_undealt.wav",
+      "file_name": "东城店_张美丽_20240612_151117_undealt.wav",
+      "store": "东城店",
+      "consultant": "张美丽",
+      "record_date": "20240612",
+      "record_time": "151117",
+      "deal_status": "undealt",
+      "duration_seconds": 74,
+      "category": "light",
+      "total_score": 55,
+      "ban_word_hits": [
+        "永不",
+        "零风险"
+      ],
+      "interruption_count": 2,
+      "price_validity_clear": true,
+      "preop_mentioned": false,
+      "postop_mentioned": true,
+      "issues": [
+        "禁用词: 永不, 零风险",
+        "未充分提及术前检查"
+      ],
+      "check_results": [
+        {
+          "rule_id": "ban_words",
+          "rule_name": "禁用词检测",
+          "passed": false,
+          "score": 0,
+          "detail": "检测到 2 个禁用词: 永不, 零风险",
+          "evidence": [
+            "...这个您放心，我们承诺永不反弹。\n顾客：价格贵...",
+            "...师：不会的，很安全，零风险。（打断）您可以先做..."
+          ]
+        },
+        {
+          "rule_id": "interruption",
+          "rule_name": "打断顾客次数",
+          "passed": true,
+          "score": 20,
+          "detail": "打断 2 次，在合理范围内",
+          "evidence": []
+        },
+        {
+          "rule_id": "price_validity",
+          "rule_name": "价格优惠有效期",
+          "passed": true,
+          "score": 20,
+          "detail": "已说明价格优惠有效期",
+          "evidence": []
+        },
+        {
+          "rule_id": "preop_check",
+          "rule_name": "术前检查提及",
+          "passed": false,
+          "score": 5,
+          "detail": "未充分提及术前检查/评估",
+          "evidence": []
+        },
+        {
+          "rule_id": "postop_care",
+          "rule_name": "术后护理提及",
+          "passed": true,
+          "score": 20,
+          "detail": "提及术后护理相关: 防晒, 补水, 恢复",
+          "evidence": []
+        }
+      ]
+    },
+    {
+      "file_path": "D:\\trae-bz\\TraeProjects\\2264\\data\\samples\\东城店_张美丽_20240613_102851_dealt.wav",
+      "file_name": "东城店_张美丽_20240613_102851_dealt.wav",
+      "store": "东城店",
+      "consultant": "张美丽",
+      "record_date": "20240613",
+      "record_time": "102851",
+      "deal_status": "dealt",
+      "duration_seconds": 85,
+      "category": "light",
+      "total_score": 30,
+      "ban_word_hits": [
+        "绝对",
+        "一针见效",
+        "无任何副作用"
+      ],
+      "interruption_count": 2,
+      "price_validity_clear": true,
+      "preop_mentioned": false,
+      "postop_mentioned": false,
+      "issues": [
+        "禁用词: 绝对, 一针见效, 无任何副作用",
+        "未充分提及术前检查",
+        "未充分提及术后护理"
+      ],
+      "check_results": [
+        {
+          "rule_id": "ban_words",
+          "rule_name": "禁用词检测",
+          "passed": false,
+          "score": 0,
+          "detail": "检测到 3 个禁用词: 绝对, 一针见效, 无任何副作用",
+          "evidence": [
+            "...成分，无任何副作用，绝对安全。\n顾客：那需要...",
+            "...业的，效果立竿见影，一针见效。\n顾客：真的吗？能...",
+            "...人体本身就有的成分，无任何副作用，绝对安全。\n顾客：..."
+          ]
+        },
+        {
+          "rule_id": "interruption",
+          "rule_name": "打断顾客次数",
+          "passed": true,
+          "score": 20,
+          "detail": "打断 2 次，在合理范围内",
+          "evidence": []
+        },
+        {
+          "rule_id": "price_validity",
+          "rule_name": "价格优惠有效期",
+          "passed": true,
+          "score": 20,
+          "detail": "已说明价格优惠有效期",
+          "evidence": []
+        },
+        {
+          "rule_id": "preop_check",
+          "rule_name": "术前检查提及",
+          "passed": false,
+          "score": 5,
+          "detail": "未充分提及术前检查/评估",
+          "evidence": []
+        },
+        {
+          "rule_id": "postop_care",
+          "rule_name": "术后护理提及",
+          "passed": false,
+          "score": 5,
+          "detail": "未充分提及术后护理/注意事项",
+          "evidence": []
+        }
+      ]
+    },
+    {
+      "file_path": "D:\\trae-bz\\TraeProjects\\2264\\data\\samples\\东城店_张美丽_20240616_165546_dealt.wav",
+      "file_name": "东城店_张美丽_20240616_165546_dealt.wav",
+      "store": "东城店",
+      "consultant": "张美丽",
+      "record_date": "20240616",
+      "record_time": "165546",
+      "deal_status": "dealt",
+      "duration_seconds": 167,
+      "category": "light",
+      "total_score": 45,
+      "ban_word_hits": [
+        "绝对",
+        "无任何副作用"
+      ],
+      "interruption_count": 5,
+      "price_validity_clear": true,
+      "preop_mentioned": false,
+      "postop_mentioned": true,
+      "issues": [
+        "禁用词: 绝对, 无任何副作用",
+        "打断顾客 5 次",
+        "未充分提及术前检查"
+      ],
+      "check_results": [
+        {
+          "rule_id": "ban_words",
+          "rule_name": "禁用词检测",
+          "passed": false,
+          "score": 0,
+          "detail": "检测到 2 个禁用词: 绝对, 无任何副作用",
+          "evidence": [
+            "...【抢话】，（打断），绝对安全，【抢话】，无任...",
+            "...绝对安全，【抢话】，无任何副作用。现在活动价很划算，..."
+          ]
+        },
+        {
+          "rule_id": "interruption",
+          "rule_name": "打断顾客次数",
+          "passed": false,
+          "score": 10,
+          "detail": "打断 5 次，超过阈值 3 次",
+          "evidence": []
+        },
+        {
+          "rule_id": "price_validity",
+          "rule_name": "价格优惠有效期",
+          "passed": true,
+          "score": 20,
+          "detail": "已说明价格优惠有效期",
+          "evidence": []
+        },
+        {
+          "rule_id": "preop_check",
+          "rule_name": "术前检查提及",
+          "passed": false,
+          "score": 5,
+          "detail": "未充分提及术前检查/评估",
+          "evidence": []
+        },
+        {
+          "rule_id": "postop_care",
+          "rule_name": "术后护理提及",
+          "passed": true,
+          "score": 20,
+          "detail": "提及术后护理相关: 防晒, 补水, 恢复",
+          "evidence": []
+        }
+      ]
+    },
+    {
+      "file_path": "D:\\trae-bz\\TraeProjects\\2264\\data\\samples\\东城店_张美丽_20240620_100325_undealt.wav",
+      "file_name": "东城店_张美丽_20240620_100325_undealt.wav",
+      "store": "东城店",
+      "consultant": "张美丽",
+      "record_date": "20240620",
+      "record_time": "100325",
+      "deal_status": "undealt",
+      "duration_seconds": 170,
+      "category": "light",
+      "total_score": 55,
+      "ban_word_hits": [
+        "保证"
+      ],
+      "interruption_count": 0,
+      "price_validity_clear": true,
+      "preop_mentioned": false,
+      "postop_mentioned": false,
+      "issues": [
+        "禁用词: 保证",
+        "未充分提及术前检查",
+        "未充分提及术后护理"
+      ],
+      "check_results": [
+        {
+          "rule_id": "ban_words",
+          "rule_name": "禁用词检测",
+          "passed": false,
+          "score": 5,
+          "detail": "检测到 1 个禁用词: 保证",
+          "evidence": [
+            "...填充项目我们很专业，保证效果持久。现在有优惠..."
+          ]
+        },
+        {
+          "rule_id": "interruption",
+          "rule_name": "打断顾客次数",
+          "passed": true,
+          "score": 20,
+          "detail": "打断 0 次，在合理范围内",
+          "evidence": []
+        },
+        {
+          "rule_id": "price_validity",
+          "rule_name": "价格优惠有效期",
+          "passed": true,
+          "score": 20,
+          "detail": "已说明价格优惠有效期",
+          "evidence": []
+        },
+        {
+          "rule_id": "preop_check",
+          "rule_name": "术前检查提及",
+          "passed": false,
+          "score": 5,
+          "detail": "未充分提及术前检查/评估",
+          "evidence": []
+        },
+        {
+          "rule_id": "postop_care",
+          "rule_name": "术后护理提及",
+          "passed": false,
+          "score": 5,
+          "detail": "未充分提及术后护理/注意事项",
+          "evidence": []
+        }
+      ]
+    },
+    {
+      "file_path": "D:\\trae-bz\\TraeProjects\\2264\\data\\samples\\东城店_李媛媛_20240611_104227_undealt.wav",
+      "file_name": "东城店_李媛媛_20240611_104227_undealt.wav",
+      "store": "东城店",
+      "consultant": "李媛媛",
+      "record_date": "20240611",
+      "record_time": "104227",
+      "deal_status": "undealt",
+      "duration_seconds": 391,
+      "category": "light",
+      "total_score": 85,
+      "ban_word_hits": [],
+      "interruption_count": 2,
+      "price_validity_clear": true,
+      "preop_mentioned": false,
+      "postop_mentioned": true,
+      "issues": [
+        "未充分提及术前检查"
+      ],
+      "check_results": [
+        {
+          "rule_id": "ban_words",
+          "rule_name": "禁用词检测",
+          "passed": true,
+          "score": 20,
+          "detail": "未检测到禁用词",
+          "evidence": []
+        },
+        {
+          "rule_id": "interruption",
+          "rule_name": "打断顾客次数",
+          "passed": true,
+          "score": 20,
+          "detail": "打断 2 次，在合理范围内",
+          "evidence": []
+        },
+        {
+          "rule_id": "price_validity",
+          "rule_name": "价格优惠有效期",
+          "passed": true,
+          "score": 20,
+          "detail": "已说明价格优惠有效期",
+          "evidence": []
+        },
+        {
+          "rule_id": "preop_check",
+          "rule_name": "术前检查提及",
+          "passed": false,
+          "score": 5,
+          "detail": "未充分提及术前检查/评估",
+          "evidence": []
+        },
+        {
+          "rule_id": "postop_care",
+          "rule_name": "术后护理提及",
+          "passed": true,
+          "score": 20,
+          "detail": "提及术后护理相关: 护理, 忌口",
+          "evidence": []
+        }
+      ]
+    },
+    {
+      "file_path": "D:\\trae-bz\\TraeProjects\\2264\\data\\samples\\东城店_李媛媛_20240611_171517_undealt.wav",
+      "file_name": "东城店_李媛媛_20240611_171517_undealt.wav",
+      "store": "东城店",
+      "consultant": "李媛媛",
+      "record_date": "20240611",
+      "record_time": "171517",
+      "deal_status": "undealt",
+      "duration_seconds": 86,
+      "category": "light",
+      "total_score": 85,
+      "ban_word_hits": [],
+      "interruption_count": 3,
+      "price_validity_clear": true,
+      "preop_mentioned": true,
+      "postop_mentioned": false,
+      "issues": [
+        "未充分提及术后护理"
+      ],
+      "check_results": [
+        {
+          "rule_id": "ban_words",
+          "rule_name": "禁用词检测",
+          "passed": true,
+          "score": 20,
+          "detail": "未检测到禁用词",
+          "evidence": []
+        },
+        {
+          "rule_id": "interruption",
+          "rule_name": "打断顾客次数",
+          "passed": true,
+          "score": 20,
+          "detail": "打断 3 次，在合理范围内",
+          "evidence": []
+        },
+        {
+          "rule_id": "price_validity",
+          "rule_name": "价格优惠有效期",
+          "passed": true,
+          "score": 20,
+          "detail": "已说明价格优惠有效期",
+          "evidence": []
+        },
+        {
+          "rule_id": "preop_check",
+          "rule_name": "术前检查提及",
+          "passed": true,
+          "score": 20,
+          "detail": "提及术前检查相关: 术前检查",
+          "evidence": []
+        },
+        {
+          "rule_id": "postop_care",
+          "rule_name": "术后护理提及",
+          "passed": false,
+          "score": 5,
+          "detail": "未充分提及术后护理/注意事项",
+          "evidence": []
+        }
+      ]
+    },
+    {
+      "file_path": "D:\\trae-bz\\TraeProjects\\2264\\data\\samples\\东城店_李媛媛_20240613_165126_dealt.wav",
+      "file_name": "东城店_李媛媛_20240613_165126_dealt.wav",
+      "store": "东城店",
+      "consultant": "李媛媛",
+      "record_date": "20240613",
+      "record_time": "165126",
+      "deal_status": "dealt",
+      "duration_seconds": 92,
+      "category": "light",
+      "total_score": 55,
+      "ban_word_hits": [
+        "保证"
+      ],
+      "interruption_count": 3,
+      "price_validity_clear": false,
+      "preop_mentioned": false,
+      "postop_mentioned": true,
+      "issues": [
+        "禁用词: 保证",
+        "价格优惠未说明有效期",
+        "未充分提及术前检查"
+      ],
+      "check_results": [
+        {
+          "rule_id": "ban_words",
+          "rule_name": "禁用词检测",
+          "passed": false,
+          "score": 5,
+          "detail": "检测到 1 个禁用词: 保证",
+          "evidence": [
+            "...有10年以上经验的，保证安全。\n顾客：那术后..."
+          ]
+        },
+        {
+          "rule_id": "interruption",
+          "rule_name": "打断顾客次数",
+          "passed": true,
+          "score": 20,
+          "detail": "打断 3 次，在合理范围内",
+          "evidence": []
+        },
+        {
+          "rule_id": "price_validity",
+          "rule_name": "价格优惠有效期",
+          "passed": false,
+          "score": 5,
+          "detail": "提及价格优惠但未说明有效期",
+          "evidence": []
+        },
+        {
+          "rule_id": "preop_check",
+          "rule_name": "术前检查提及",
+          "passed": false,
+          "score": 5,
+          "detail": "未充分提及术前检查/评估",
+          "evidence": []
+        },
+        {
+          "rule_id": "postop_care",
+          "rule_name": "术后护理提及",
+          "passed": true,
+          "score": 20,
+          "detail": "提及术后护理相关: 忌口, 恢复, 冰敷, 热敷",
+          "evidence": []
+        }
+      ]
+    },
+    {
+      "file_path": "D:\\trae-bz\\TraeProjects\\2264\\data\\samples\\东城店_李媛媛_20240613_170846_undealt.wav",
+      "file_name": "东城店_李媛媛_20240613_170846_undealt.wav",
+      "store": "东城店",
+      "consultant": "李媛媛",
+      "record_date": "20240613",
+      "record_time": "170846",
+      "deal_status": "undealt",
+      "duration_seconds": 92,
+      "category": "light",
+      "total_score": 85,
+      "ban_word_hits": [
+        "绝对"
+      ],
+      "interruption_count": 1,
+      "price_validity_clear": true,
+      "preop_mentioned": true,
+      "postop_mentioned": true,
+      "issues": [
+        "禁用词: 绝对"
+      ],
+      "check_results": [
+        {
+          "rule_id": "ban_words",
+          "rule_name": "禁用词检测",
+          "passed": false,
+          "score": 5,
+          "detail": "检测到 1 个禁用词: 绝对",
+          "evidence": [
+            "...术安全吗？\n咨询师：绝对安全，我们做了上万例..."
+          ]
+        },
+        {
+          "rule_id": "interruption",
+          "rule_name": "打断顾客次数",
+          "passed": true,
+          "score": 20,
+          "detail": "打断 1 次，在合理范围内",
+          "evidence": []
+        },
+        {
+          "rule_id": "price_validity",
+          "rule_name": "价格优惠有效期",
+          "passed": true,
+          "score": 20,
+          "detail": "已说明价格优惠有效期",
+          "evidence": []
+        },
+        {
+          "rule_id": "preop_check",
+          "rule_name": "术前检查提及",
+          "passed": true,
+          "score": 20,
+          "detail": "提及术前检查相关: 血常规, 凝血",
+          "evidence": []
+        },
+        {
+          "rule_id": "postop_care",
+          "rule_name": "术后护理提及",
+          "passed": true,
+          "score": 20,
+          "detail": "提及术后护理相关: 术后护理, 护理, 忌口, 恢复",
+          "evidence": []
+        }
+      ]
+    },
+    {
+      "file_path": "D:\\trae-bz\\TraeProjects\\2264\\data\\samples\\丰台店_周梦瑶_20240610_093730_dealt.wav",
+      "file_name": "丰台店_周梦瑶_20240610_093730_dealt.wav",
+      "store": "丰台店",
+      "consultant": "周梦瑶",
+      "record_date": "20240610",
+      "record_time": "093730",
+      "deal_status": "dealt",
+      "duration_seconds": 478,
+      "category": "light",
+      "total_score": 85,
+      "ban_word_hits": [],
+      "interruption_count": 1,
+      "price_validity_clear": true,
+      "preop_mentioned": false,
+      "postop_mentioned": true,
+      "issues": [
+        "未充分提及术前检查"
+      ],
+      "check_results": [
+        {
+          "rule_id": "ban_words",
+          "rule_name": "禁用词检测",
+          "passed": true,
+          "score": 20,
+          "detail": "未检测到禁用词",
+          "evidence": []
+        },
+        {
+          "rule_id": "interruption",
+          "rule_name": "打断顾客次数",
+          "passed": true,
+          "score": 20,
+          "detail": "打断 1 次，在合理范围内",
+          "evidence": []
+        },
+        {
+          "rule_id": "price_validity",
+          "rule_name": "价格优惠有效期",
+          "passed": true,
+          "score": 20,
+          "detail": "已说明价格优惠有效期",
+          "evidence": []
+        },
+        {
+          "rule_id": "preop_check",
+          "rule_name": "术前检查提及",
+          "passed": false,
+          "score": 5,
+          "detail": "未充分提及术前检查/评估",
+          "evidence": []
+        },
+        {
+          "rule_id": "postop_care",
+          "rule_name": "术后护理提及",
+          "passed": true,
+          "score": 20,
+          "detail": "提及术后护理相关: 护理, 忌口",
+          "evidence": []
+        }
+      ]
+    },
+    {
+      "file_path": "D:\\trae-bz\\TraeProjects\\2264\\data\\samples\\丰台店_周梦瑶_20240612_121813_dealt.wav",
+      "file_name": "丰台店_周梦瑶_20240612_121813_dealt.wav",
+      "store": "丰台店",
+      "consultant": "周梦瑶",
+      "record_date": "20240612",
+      "record_time": "121813",
+      "deal_status": "dealt",
+      "duration_seconds": 92,
+      "category": "light",
+      "total_score": 85,
+      "ban_word_hits": [
+        "绝对"
+      ],
+      "interruption_count": 1,
+      "price_validity_clear": true,
+      "preop_mentioned": true,
+      "postop_mentioned": true,
+      "issues": [
+        "禁用词: 绝对"
+      ],
+      "check_results": [
+        {
+          "rule_id": "ban_words",
+          "rule_name": "禁用词检测",
+          "passed": false,
+          "score": 5,
+          "detail": "检测到 1 个禁用词: 绝对",
+          "evidence": [
+            "...术安全吗？\n咨询师：绝对安全，我们做了上万例..."
+          ]
+        },
+        {
+          "rule_id": "interruption",
+          "rule_name": "打断顾客次数",
+          "passed": true,
+          "score": 20,
+          "detail": "打断 1 次，在合理范围内",
+          "evidence": []
+        },
+        {
+          "rule_id": "price_validity",
+          "rule_name": "价格优惠有效期",
+          "passed": true,
+          "score": 20,
+          "detail": "已说明价格优惠有效期",
+          "evidence": []
+        },
+        {
+          "rule_id": "preop_check",
+          "rule_name": "术前检查提及",
+          "passed": true,
+          "score": 20,
+          "detail": "提及术前检查相关: 血常规, 凝血",
+          "evidence": []
+        },
+        {
+          "rule_id": "postop_care",
+          "rule_name": "术后护理提及",
+          "passed": true,
+          "score": 20,
+          "detail": "提及术后护理相关: 术后护理, 护理, 忌口, 恢复",
+          "evidence": []
+        }
+      ]
+    },
+    {
+      "file_path": "D:\\trae-bz\\TraeProjects\\2264\\data\\samples\\丰台店_周梦瑶_20240616_174245_undealt.wav",
+      "file_name": "丰台店_周梦瑶_20240616_174245_undealt.wav",
+      "store": "丰台店",
+      "consultant": "周梦瑶",
+      "record_date": "20240616",
+      "record_time": "174245",
+      "deal_status": "undealt",
+      "duration_seconds": 86,
+      "category": "light",
+      "total_score": 85,
+      "ban_word_hits": [],
+      "interruption_count": 3,
+      "price_validity_clear": true,
+      "preop_mentioned": true,
+      "postop_mentioned": false,
+      "issues": [
+        "未充分提及术后护理"
+      ],
+      "check_results": [
+        {
+          "rule_id": "ban_words",
+          "rule_name": "禁用词检测",
+          "passed": true,
+          "score": 20,
+          "detail": "未检测到禁用词",
+          "evidence": []
+        },
+        {
+          "rule_id": "interruption",
+          "rule_name": "打断顾客次数",
+          "passed": true,
+          "score": 20,
+          "detail": "打断 3 次，在合理范围内",
+          "evidence": []
+        },
+        {
+          "rule_id": "price_validity",
+          "rule_name": "价格优惠有效期",
+          "passed": true,
+          "score": 20,
+          "detail": "已说明价格优惠有效期",
+          "evidence": []
+        },
+        {
+          "rule_id": "preop_check",
+          "rule_name": "术前检查提及",
+          "passed": true,
+          "score": 20,
+          "detail": "提及术前检查相关: 术前检查",
+          "evidence": []
+        },
+        {
+          "rule_id": "postop_care",
+          "rule_name": "术后护理提及",
+          "passed": false,
+          "score": 5,
+          "detail": "未充分提及术后护理/注意事项",
+          "evidence": []
+        }
+      ]
+    },
+    {
+      "file_path": "D:\\trae-bz\\TraeProjects\\2264\\data\\samples\\丰台店_周梦瑶_20240619_170347_undealt.wav",
+      "file_name": "丰台店_周梦瑶_20240619_170347_undealt.wav",
+      "store": "丰台店",
+      "consultant": "周梦瑶",
+      "record_date": "20240619",
+      "record_time": "170347",
+      "deal_status": "undealt",
+      "duration_seconds": 92,
+      "category": "light",
+      "total_score": 55,
+      "ban_word_hits": [
+        "保证"
+      ],
+      "interruption_count": 3,
+      "price_validity_clear": false,
+      "preop_mentioned": false,
+      "postop_mentioned": true,
+      "issues": [
+        "禁用词: 保证",
+        "价格优惠未说明有效期",
+        "未充分提及术前检查"
+      ],
+      "check_results": [
+        {
+          "rule_id": "ban_words",
+          "rule_name": "禁用词检测",
+          "passed": false,
+          "score": 5,
+          "detail": "检测到 1 个禁用词: 保证",
+          "evidence": [
+            "...有10年以上经验的，保证安全。\n顾客：那术后..."
+          ]
+        },
+        {
+          "rule_id": "interruption",
+          "rule_name": "打断顾客次数",
+          "passed": true,
+          "score": 20,
+          "detail": "打断 3 次，在合理范围内",
+          "evidence": []
+        },
+        {
+          "rule_id": "price_validity",
+          "rule_name": "价格优惠有效期",
+          "passed": false,
+          "score": 5,
+          "detail": "提及价格优惠但未说明有效期",
+          "evidence": []
+        },
+        {
+          "rule_id": "preop_check",
+          "rule_name": "术前检查提及",
+          "passed": false,
+          "score": 5,
+          "detail": "未充分提及术前检查/评估",
+          "evidence": []
+        },
+        {
+          "rule_id": "postop_care",
+          "rule_name": "术后护理提及",
+          "passed": true,
+          "score": 20,
+          "detail": "提及术后护理相关: 忌口, 恢复, 冰敷, 热敷",
+          "evidence": []
+        }
+      ]
+    },
+    {
+      "file_path": "D:\\trae-bz\\TraeProjects\\2264\\data\\samples\\丰台店_张美丽_20240612_153130_dealt.wav",
+      "file_name": "丰台店_张美丽_20240612_153130_dealt.wav",
+      "store": "丰台店",
+      "consultant": "张美丽",
+      "record_date": "20240612",
+      "record_time": "153130",
+      "deal_status": "dealt",
+      "duration_seconds": 261,
+      "category": "light",
+      "total_score": 50,
+      "ban_word_hits": [
+        "保证"
+      ],
+      "interruption_count": 4,
+      "price_validity_clear": true,
+      "preop_mentioned": false,
+      "postop_mentioned": false,
+      "issues": [
+        "禁用词: 保证",
+        "打断顾客 4 次",
+        "未充分提及术前检查",
+        "未充分提及术后护理"
+      ],
+      "check_results": [
+        {
+          "rule_id": "ban_words",
+          "rule_name": "禁用词检测",
+          "passed": false,
+          "score": 5,
+          "detail": "检测到 1 个禁用词: 保证",
+          "evidence": [
+            "...们很专业，（插话），保证效果持久。现在有优惠..."
+          ]
+        },
+        {
+          "rule_id": "interruption",
+          "rule_name": "打断顾客次数",
+          "passed": false,
+          "score": 15,
+          "detail": "打断 4 次，超过阈值 3 次",
+          "evidence": []
+        },
+        {
+          "rule_id": "price_validity",
+          "rule_name": "价格优惠有效期",
+          "passed": true,
+          "score": 20,
+          "detail": "已说明价格优惠有效期",
+          "evidence": []
+        },
+        {
+          "rule_id": "preop_check",
+          "rule_name": "术前检查提及",
+          "passed": false,
+          "score": 5,
+          "detail": "未充分提及术前检查/评估",
+          "evidence": []
+        },
+        {
+          "rule_id": "postop_care",
+          "rule_name": "术后护理提及",
+          "passed": false,
+          "score": 5,
+          "detail": "未充分提及术后护理/注意事项",
+          "evidence": []
+        }
+      ]
+    },
+    {
+      "file_path": "D:\\trae-bz\\TraeProjects\\2264\\data\\samples\\丰台店_张美丽_20240616_091024_dealt.wav",
+      "file_name": "丰台店_张美丽_20240616_091024_dealt.wav",
+      "store": "丰台店",
+      "consultant": "张美丽",
+      "record_date": "20240616",
+      "record_time": "091024",
+      "deal_status": "dealt",
+      "duration_seconds": 86,
+      "category": "light",
+      "total_score": 85,
+      "ban_word_hits": [],
+      "interruption_count": 3,
+      "price_validity_clear": true,
+      "preop_mentioned": true,
+      "postop_mentioned": false,
+      "issues": [
+        "未充分提及术后护理"
+      ],
+      "check_results": [
+        {
+          "rule_id": "ban_words",
+          "rule_name": "禁用词检测",
+          "passed": true,
+          "score": 20,
+          "detail": "未检测到禁用词",
+          "evidence": []
+        },
+        {
+          "rule_id": "interruption",
+          "rule_name": "打断顾客次数",
+          "passed": true,
+          "score": 20,
+          "detail": "打断 3 次，在合理范围内",
+          "evidence": []
+        },
+        {
+          "rule_id": "price_validity",
+          "rule_name": "价格优惠有效期",
+          "passed": true,
+          "score": 20,
+          "detail": "已说明价格优惠有效期",
+          "evidence": []
+        },
+        {
+          "rule_id": "preop_check",
+          "rule_name": "术前检查提及",
+          "passed": true,
+          "score": 20,
+          "detail": "提及术前检查相关: 术前检查",
+          "evidence": []
+        },
+        {
+          "rule_id": "postop_care",
+          "rule_name": "术后护理提及",
+          "passed": false,
+          "score": 5,
+          "detail": "未充分提及术后护理/注意事项",
+          "evidence": []
+        }
+      ]
+    },
+    {
+      "file_path": "D:\\trae-bz\\TraeProjects\\2264\\data\\samples\\丰台店_张美丽_20240616_135950_undealt.wav",
+      "file_name": "丰台店_张美丽_20240616_135950_undealt.wav",
+      "store": "丰台店",
+      "consultant": "张美丽",
+      "record_date": "20240616",
+      "record_time": "135950",
+      "deal_status": "undealt",
+      "duration_seconds": 85,
+      "category": "light",
+      "total_score": 30,
+      "ban_word_hits": [
+        "绝对",
+        "一针见效",
+        "无任何副作用"
+      ],
+      "interruption_count": 2,
+      "price_validity_clear": true,
+      "preop_mentioned": false,
+      "postop_mentioned": false,
+      "issues": [
+        "禁用词: 绝对, 一针见效, 无任何副作用",
+        "未充分提及术前检查",
+        "未充分提及术后护理"
+      ],
+      "check_results": [
+        {
+          "rule_id": "ban_words",
+          "rule_name": "禁用词检测",
+          "passed": false,
+          "score": 0,
+          "detail": "检测到 3 个禁用词: 绝对, 一针见效, 无任何副作用",
+          "evidence": [
+            "...成分，无任何副作用，绝对安全。\n顾客：那需要...",
+            "...业的，效果立竿见影，一针见效。\n顾客：真的吗？能...",
+            "...人体本身就有的成分，无任何副作用，绝对安全。\n顾客：..."
+          ]
+        },
+        {
+          "rule_id": "interruption",
+          "rule_name": "打断顾客次数",
+          "passed": true,
+          "score": 20,
+          "detail": "打断 2 次，在合理范围内",
+          "evidence": []
+        },
+        {
+          "rule_id": "price_validity",
+          "rule_name": "价格优惠有效期",
+          "passed": true,
+          "score": 20,
+          "detail": "已说明价格优惠有效期",
+          "evidence": []
+        },
+        {
+          "rule_id": "preop_check",
+          "rule_name": "术前检查提及",
+          "passed": false,
+          "score": 5,
+          "detail": "未充分提及术前检查/评估",
+          "evidence": []
+        },
+        {
+          "rule_id": "postop_care",
+          "rule_name": "术后护理提及",
+          "passed": false,
+          "score": 5,
+          "detail": "未充分提及术后护理/注意事项",
+          "evidence": []
+        }
+      ]
+    },
+    {
+      "file_path": "D:\\trae-bz\\TraeProjects\\2264\\data\\samples\\朝阳店_张美丽_20240612_152117_dealt.wav",
+      "file_name": "朝阳店_张美丽_20240612_152117_dealt.wav",
+      "store": "朝阳店",
+      "consultant": "张美丽",
+      "record_date": "20240612",
+      "record_time": "152117",
+      "deal_status": "dealt",
+      "duration_seconds": 74,
+      "category": "light",
+      "total_score": 55,
+      "ban_word_hits": [
+        "永不",
+        "零风险"
+      ],
+      "interruption_count": 2,
+      "price_validity_clear": true,
+      "preop_mentioned": false,
+      "postop_mentioned": true,
+      "issues": [
+        "禁用词: 永不, 零风险",
+        "未充分提及术前检查"
+      ],
+      "check_results": [
+        {
+          "rule_id": "ban_words",
+          "rule_name": "禁用词检测",
+          "passed": false,
+          "score": 0,
+          "detail": "检测到 2 个禁用词: 永不, 零风险",
+          "evidence": [
+            "...这个您放心，我们承诺永不反弹。\n顾客：价格贵...",
+            "...师：不会的，很安全，零风险。（打断）您可以先做..."
+          ]
+        },
+        {
+          "rule_id": "interruption",
+          "rule_name": "打断顾客次数",
+          "passed": true,
+          "score": 20,
+          "detail": "打断 2 次，在合理范围内",
+          "evidence": []
+        },
+        {
+          "rule_id": "price_validity",
+          "rule_name": "价格优惠有效期",
+          "passed": true,
+          "score": 20,
+          "detail": "已说明价格优惠有效期",
+          "evidence": []
+        },
+        {
+          "rule_id": "preop_check",
+          "rule_name": "术前检查提及",
+          "passed": false,
+          "score": 5,
+          "detail": "未充分提及术前检查/评估",
+          "evidence": []
+        },
+        {
+          "rule_id": "postop_care",
+          "rule_name": "术后护理提及",
+          "passed": true,
+          "score": 20,
+          "detail": "提及术后护理相关: 防晒, 补水, 恢复",
+          "evidence": []
+        }
+      ]
+    },
+    {
+      "file_path": "D:\\trae-bz\\TraeProjects\\2264\\data\\samples\\朝阳店_张美丽_20240619_135155_dealt.wav",
+      "file_name": "朝阳店_张美丽_20240619_135155_dealt.wav",
+      "store": "朝阳店",
+      "consultant": "张美丽",
+      "record_date": "20240619",
+      "record_time": "135155",
+      "deal_status": "dealt",
+      "duration_seconds": 86,
+      "category": "light",
+      "total_score": 85,
+      "ban_word_hits": [],
+      "interruption_count": 3,
+      "price_validity_clear": true,
+      "preop_mentioned": true,
+      "postop_mentioned": false,
+      "issues": [
+        "未充分提及术后护理"
+      ],
+      "check_results": [
+        {
+          "rule_id": "ban_words",
+          "rule_name": "禁用词检测",
+          "passed": true,
+          "score": 20,
+          "detail": "未检测到禁用词",
+          "evidence": []
+        },
+        {
+          "rule_id": "interruption",
+          "rule_name": "打断顾客次数",
+          "passed": true,
+          "score": 20,
+          "detail": "打断 3 次，在合理范围内",
+          "evidence": []
+        },
+        {
+          "rule_id": "price_validity",
+          "rule_name": "价格优惠有效期",
+          "passed": true,
+          "score": 20,
+          "detail": "已说明价格优惠有效期",
+          "evidence": []
+        },
+        {
+          "rule_id": "preop_check",
+          "rule_name": "术前检查提及",
+          "passed": true,
+          "score": 20,
+          "detail": "提及术前检查相关: 术前检查",
+          "evidence": []
+        },
+        {
+          "rule_id": "postop_care",
+          "rule_name": "术后护理提及",
+          "passed": false,
+          "score": 5,
+          "detail": "未充分提及术后护理/注意事项",
+          "evidence": []
+        }
+      ]
+    },
+    {
+      "file_path": "D:\\trae-bz\\TraeProjects\\2264\\data\\samples\\朝阳店_张美丽_20240620_172614_undealt.wav",
+      "file_name": "朝阳店_张美丽_20240620_172614_undealt.wav",
+      "store": "朝阳店",
+      "consultant": "张美丽",
+      "record_date": "20240620",
+      "record_time": "172614",
+      "deal_status": "undealt",
+      "duration_seconds": 74,
+      "category": "light",
+      "total_score": 55,
+      "ban_word_hits": [
+        "永不",
+        "零风险"
+      ],
+      "interruption_count": 2,
+      "price_validity_clear": true,
+      "preop_mentioned": false,
+      "postop_mentioned": true,
+      "issues": [
+        "禁用词: 永不, 零风险",
+        "未充分提及术前检查"
+      ],
+      "check_results": [
+        {
+          "rule_id": "ban_words",
+          "rule_name": "禁用词检测",
+          "passed": false,
+          "score": 0,
+          "detail": "检测到 2 个禁用词: 永不, 零风险",
+          "evidence": [
+            "...这个您放心，我们承诺永不反弹。\n顾客：价格贵...",
+            "...师：不会的，很安全，零风险。（打断）您可以先做..."
+          ]
+        },
+        {
+          "rule_id": "interruption",
+          "rule_name": "打断顾客次数",
+          "passed": true,
+          "score": 20,
+          "detail": "打断 2 次，在合理范围内",
+          "evidence": []
+        },
+        {
+          "rule_id": "price_validity",
+          "rule_name": "价格优惠有效期",
+          "passed": true,
+          "score": 20,
+          "detail": "已说明价格优惠有效期",
+          "evidence": []
+        },
+        {
+          "rule_id": "preop_check",
+          "rule_name": "术前检查提及",
+          "passed": false,
+          "score": 5,
+          "detail": "未充分提及术前检查/评估",
+          "evidence": []
+        },
+        {
+          "rule_id": "postop_care",
+          "rule_name": "术后护理提及",
+          "passed": true,
+          "score": 20,
+          "detail": "提及术后护理相关: 防晒, 补水, 恢复",
+          "evidence": []
+        }
+      ]
+    },
+    {
+      "file_path": "D:\\trae-bz\\TraeProjects\\2264\\data\\samples\\朝阳店_李媛媛_20240613_114706_dealt.wav",
+      "file_name": "朝阳店_李媛媛_20240613_114706_dealt.wav",
+      "store": "朝阳店",
+      "consultant": "李媛媛",
+      "record_date": "20240613",
+      "record_time": "114706",
+      "deal_status": "dealt",
+      "duration_seconds": 169,
+      "category": "light",
+      "total_score": 55,
+      "ban_word_hits": [],
+      "interruption_count": 1,
+      "price_validity_clear": false,
+      "preop_mentioned": false,
+      "postop_mentioned": false,
+      "issues": [
+        "价格优惠未说明有效期",
+        "未充分提及术前检查",
+        "未充分提及术后护理"
+      ],
+      "check_results": [
+        {
+          "rule_id": "ban_words",
+          "rule_name": "禁用词检测",
+          "passed": true,
+          "score": 20,
+          "detail": "未检测到禁用词",
+          "evidence": []
+        },
+        {
+          "rule_id": "interruption",
+          "rule_name": "打断顾客次数",
+          "passed": true,
+          "score": 20,
+          "detail": "打断 1 次，在合理范围内",
+          "evidence": []
+        },
+        {
+          "rule_id": "price_validity",
+          "rule_name": "价格优惠有效期",
+          "passed": false,
+          "score": 5,
+          "detail": "提及价格优惠但未说明有效期",
+          "evidence": []
+        },
+        {
+          "rule_id": "preop_check",
+          "rule_name": "术前检查提及",
+          "passed": false,
+          "score": 5,
+          "detail": "未充分提及术前检查/评估",
+          "evidence": []
+        },
+        {
+          "rule_id": "postop_care",
+          "rule_name": "术后护理提及",
+          "passed": false,
+          "score": 5,
+          "detail": "未充分提及术后护理/注意事项",
+          "evidence": []
+        }
+      ]
+    },
+    {
+      "file_path": "D:\\trae-bz\\TraeProjects\\2264\\data\\samples\\朝阳店_李媛媛_20240613_123238_dealt.wav",
+      "file_name": "朝阳店_李媛媛_20240613_123238_dealt.wav",
+      "store": "朝阳店",
+      "consultant": "李媛媛",
+      "record_date": "20240613",
+      "record_time": "123238",
+      "deal_status": "dealt",
+      "duration_seconds": 273,
+      "category": "light",
+      "total_score": 55,
+      "ban_word_hits": [],
+      "interruption_count": 3,
+      "price_validity_clear": false,
+      "preop_mentioned": false,
+      "postop_mentioned": false,
+      "issues": [
+        "价格优惠未说明有效期",
+        "未充分提及术前检查",
+        "未充分提及术后护理"
+      ],
+      "check_results": [
+        {
+          "rule_id": "ban_words",
+          "rule_name": "禁用词检测",
+          "passed": true,
+          "score": 20,
+          "detail": "未检测到禁用词",
+          "evidence": []
+        },
+        {
+          "rule_id": "interruption",
+          "rule_name": "打断顾客次数",
+          "passed": true,
+          "score": 20,
+          "detail": "打断 3 次，在合理范围内",
+          "evidence": []
+        },
+        {
+          "rule_id": "price_validity",
+          "rule_name": "价格优惠有效期",
+          "passed": false,
+          "score": 5,
+          "detail": "提及价格优惠但未说明有效期",
+          "evidence": []
+        },
+        {
+          "rule_id": "preop_check",
+          "rule_name": "术前检查提及",
+          "passed": false,
+          "score": 5,
+          "detail": "未充分提及术前检查/评估",
+          "evidence": []
+        },
+        {
+          "rule_id": "postop_care",
+          "rule_name": "术后护理提及",
+          "passed": false,
+          "score": 5,
+          "detail": "未充分提及术后护理/注意事项",
+          "evidence": []
+        }
+      ]
+    },
+    {
+      "file_path": "D:\\trae-bz\\TraeProjects\\2264\\data\\samples\\朝阳店_李媛媛_20240619_150201_dealt.wav",
+      "file_name": "朝阳店_李媛媛_20240619_150201_dealt.wav",
+      "store": "朝阳店",
+      "consultant": "李媛媛",
+      "record_date": "20240619",
+      "record_time": "150201",
+      "deal_status": "dealt",
+      "duration_seconds": 461,
+      "category": "light",
+      "total_score": 50,
+      "ban_word_hits": [
+        "绝对",
+        "无任何副作用"
+      ],
+      "interruption_count": 4,
+      "price_validity_clear": true,
+      "preop_mentioned": false,
+      "postop_mentioned": true,
+      "issues": [
+        "禁用词: 绝对, 无任何副作用",
+        "打断顾客 4 次",
+        "未充分提及术前检查"
+      ],
+      "check_results": [
+        {
+          "rule_id": "ban_words",
+          "rule_name": "禁用词检测",
+          "passed": false,
+          "score": 0,
+          "detail": "检测到 2 个禁用词: 绝对, 无任何副作用",
+          "evidence": [
+            "...针我们这边很受欢迎，绝对安全，（打断），无任...",
+            "...绝对安全，（打断），无任何副作用。现在活动价很划算，..."
+          ]
+        },
+        {
+          "rule_id": "interruption",
+          "rule_name": "打断顾客次数",
+          "passed": false,
+          "score": 15,
+          "detail": "打断 4 次，超过阈值 3 次",
+          "evidence": []
+        },
+        {
+          "rule_id": "price_validity",
+          "rule_name": "价格优惠有效期",
+          "passed": true,
+          "score": 20,
+          "detail": "已说明价格优惠有效期",
+          "evidence": []
+        },
+        {
+          "rule_id": "preop_check",
+          "rule_name": "术前检查提及",
+          "passed": false,
+          "score": 5,
+          "detail": "未充分提及术前检查/评估",
+          "evidence": []
+        },
+        {
+          "rule_id": "postop_care",
+          "rule_name": "术后护理提及",
+          "passed": true,
+          "score": 20,
+          "detail": "提及术后护理相关: 防晒, 补水, 恢复",
+          "evidence": []
+        }
+      ]
+    },
+    {
+      "file_path": "D:\\trae-bz\\TraeProjects\\2264\\data\\samples\\朝阳店_王婷婷_20240618_135340_undealt.wav",
+      "file_name": "朝阳店_王婷婷_20240618_135340_undealt.wav",
+      "store": "朝阳店",
+      "consultant": "王婷婷",
+      "record_date": "20240618",
+      "record_time": "135340",
+      "deal_status": "undealt",
+      "duration_seconds": 86,
+      "category": "light",
+      "total_score": 85,
+      "ban_word_hits": [],
+      "interruption_count": 3,
+      "price_validity_clear": true,
+      "preop_mentioned": true,
+      "postop_mentioned": false,
+      "issues": [
+        "未充分提及术后护理"
+      ],
+      "check_results": [
+        {
+          "rule_id": "ban_words",
+          "rule_name": "禁用词检测",
+          "passed": true,
+          "score": 20,
+          "detail": "未检测到禁用词",
+          "evidence": []
+        },
+        {
+          "rule_id": "interruption",
+          "rule_name": "打断顾客次数",
+          "passed": true,
+          "score": 20,
+          "detail": "打断 3 次，在合理范围内",
+          "evidence": []
+        },
+        {
+          "rule_id": "price_validity",
+          "rule_name": "价格优惠有效期",
+          "passed": true,
+          "score": 20,
+          "detail": "已说明价格优惠有效期",
+          "evidence": []
+        },
+        {
+          "rule_id": "preop_check",
+          "rule_name": "术前检查提及",
+          "passed": true,
+          "score": 20,
+          "detail": "提及术前检查相关: 术前检查",
+          "evidence": []
+        },
+        {
+          "rule_id": "postop_care",
+          "rule_name": "术后护理提及",
+          "passed": false,
+          "score": 5,
+          "detail": "未充分提及术后护理/注意事项",
+          "evidence": []
+        }
+      ]
+    },
+    {
+      "file_path": "D:\\trae-bz\\TraeProjects\\2264\\data\\samples\\朝阳店_王婷婷_20240619_124504_dealt.wav",
+      "file_name": "朝阳店_王婷婷_20240619_124504_dealt.wav",
+      "store": "朝阳店",
+      "consultant": "王婷婷",
+      "record_date": "20240619",
+      "record_time": "124504",
+      "deal_status": "dealt",
+      "duration_seconds": 74,
+      "category": "light",
+      "total_score": 55,
+      "ban_word_hits": [
+        "永不",
+        "零风险"
+      ],
+      "interruption_count": 2,
+      "price_validity_clear": true,
+      "preop_mentioned": false,
+      "postop_mentioned": true,
+      "issues": [
+        "禁用词: 永不, 零风险",
+        "未充分提及术前检查"
+      ],
+      "check_results": [
+        {
+          "rule_id": "ban_words",
+          "rule_name": "禁用词检测",
+          "passed": false,
+          "score": 0,
+          "detail": "检测到 2 个禁用词: 永不, 零风险",
+          "evidence": [
+            "...这个您放心，我们承诺永不反弹。\n顾客：价格贵...",
+            "...师：不会的，很安全，零风险。（打断）您可以先做..."
+          ]
+        },
+        {
+          "rule_id": "interruption",
+          "rule_name": "打断顾客次数",
+          "passed": true,
+          "score": 20,
+          "detail": "打断 2 次，在合理范围内",
+          "evidence": []
+        },
+        {
+          "rule_id": "price_validity",
+          "rule_name": "价格优惠有效期",
+          "passed": true,
+          "score": 20,
+          "detail": "已说明价格优惠有效期",
+          "evidence": []
+        },
+        {
+          "rule_id": "preop_check",
+          "rule_name": "术前检查提及",
+          "passed": false,
+          "score": 5,
+          "detail": "未充分提及术前检查/评估",
+          "evidence": []
+        },
+        {
+          "rule_id": "postop_care",
+          "rule_name": "术后护理提及",
+          "passed": true,
+          "score": 20,
+          "detail": "提及术后护理相关: 防晒, 补水, 恢复",
+          "evidence": []
+        }
+      ]
+    },
+    {
+      "file_path": "D:\\trae-bz\\TraeProjects\\2264\\data\\samples\\朝阳店_赵雅婷_20240615_100524_dealt.wav",
+      "file_name": "朝阳店_赵雅婷_20240615_100524_dealt.wav",
+      "store": "朝阳店",
+      "consultant": "赵雅婷",
+      "record_date": "20240615",
+      "record_time": "100524",
+      "deal_status": "dealt",
+      "duration_seconds": 621,
+      "category": "light",
+      "total_score": 85,
+      "ban_word_hits": [],
+      "interruption_count": 1,
+      "price_validity_clear": true,
+      "preop_mentioned": false,
+      "postop_mentioned": true,
+      "issues": [
+        "未充分提及术前检查"
+      ],
+      "check_results": [
+        {
+          "rule_id": "ban_words",
+          "rule_name": "禁用词检测",
+          "passed": true,
+          "score": 20,
+          "detail": "未检测到禁用词",
+          "evidence": []
+        },
+        {
+          "rule_id": "interruption",
+          "rule_name": "打断顾客次数",
+          "passed": true,
+          "score": 20,
+          "detail": "打断 1 次，在合理范围内",
+          "evidence": []
+        },
+        {
+          "rule_id": "price_validity",
+          "rule_name": "价格优惠有效期",
+          "passed": true,
+          "score": 20,
+          "detail": "已说明价格优惠有效期",
+          "evidence": []
+        },
+        {
+          "rule_id": "preop_check",
+          "rule_name": "术前检查提及",
+          "passed": false,
+          "score": 5,
+          "detail": "未充分提及术前检查/评估",
+          "evidence": []
+        },
+        {
+          "rule_id": "postop_care",
+          "rule_name": "术后护理提及",
+          "passed": true,
+          "score": 20,
+          "detail": "提及术后护理相关: 护理, 忌口",
+          "evidence": []
+        }
+      ]
+    },
+    {
+      "file_path": "D:\\trae-bz\\TraeProjects\\2264\\data\\samples\\朝阳店_赵雅婷_20240615_143816_dealt.wav",
+      "file_name": "朝阳店_赵雅婷_20240615_143816_dealt.wav",
+      "store": "朝阳店",
+      "consultant": "赵雅婷",
+      "record_date": "20240615",
+      "record_time": "143816",
+      "deal_status": "dealt",
+      "duration_seconds": 474,
+      "category": "light",
+      "total_score": 50,
+      "ban_word_hits": [
+        "保证"
+      ],
+      "interruption_count": 4,
+      "price_validity_clear": true,
+      "preop_mentioned": false,
+      "postop_mentioned": false,
+      "issues": [
+        "禁用词: 保证",
+        "打断顾客 4 次",
+        "未充分提及术前检查",
+        "未充分提及术后护理"
+      ],
+      "check_results": [
+        {
+          "rule_id": "ban_words",
+          "rule_name": "禁用词检测",
+          "passed": false,
+          "score": 5,
+          "detail": "检测到 1 个禁用词: 保证",
+          "evidence": [
+            "...填充项目我们很专业，保证效果持久。现在有优惠..."
+          ]
+        },
+        {
+          "rule_id": "interruption",
+          "rule_name": "打断顾客次数",
+          "passed": false,
+          "score": 15,
+          "detail": "打断 4 次，超过阈值 3 次",
+          "evidence": []
+        },
+        {
+          "rule_id": "price_validity",
+          "rule_name": "价格优惠有效期",
+          "passed": true,
+          "score": 20,
+          "detail": "已说明价格优惠有效期",
+          "evidence": []
+        },
+        {
+          "rule_id": "preop_check",
+          "rule_name": "术前检查提及",
+          "passed": false,
+          "score": 5,
+          "detail": "未充分提及术前检查/评估",
+          "evidence": []
+        },
+        {
+          "rule_id": "postop_care",
+          "rule_name": "术后护理提及",
+          "passed": false,
+          "score": 5,
+          "detail": "未充分提及术后护理/注意事项",
+          "evidence": []
+        }
+      ]
+    },
+    {
+      "file_path": "D:\\trae-bz\\TraeProjects\\2264\\data\\samples\\朝阳店_赵雅婷_20240617_170759_undealt.wav",
+      "file_name": "朝阳店_赵雅婷_20240617_170759_undealt.wav",
+      "store": "朝阳店",
+      "consultant": "赵雅婷",
+      "record_date": "20240617",
+      "record_time": "170759",
+      "deal_status": "undealt",
+      "duration_seconds": 629,
+      "category": "light",
+      "total_score": 40,
+      "ban_word_hits": [
+        "保证",
+        "一针见效"
+      ],
+      "interruption_count": 0,
+      "price_validity_clear": true,
+      "preop_mentioned": false,
+      "postop_mentioned": false,
+      "issues": [
+        "禁用词: 保证, 一针见效",
+        "未充分提及术前检查",
+        "未充分提及术后护理"
+      ],
+      "check_results": [
+        {
+          "rule_id": "ban_words",
+          "rule_name": "禁用词检测",
+          "passed": false,
+          "score": 0,
+          "detail": "检测到 2 个禁用词: 保证, 一针见效",
+          "evidence": [
+            "...效果很好，一针见效，保证让您满意。价格方面现...",
+            "...玻尿酸隆鼻效果很好，一针见效，保证让您满意。价格..."
+          ]
+        },
+        {
+          "rule_id": "interruption",
+          "rule_name": "打断顾客次数",
+          "passed": true,
+          "score": 20,
+          "detail": "打断 0 次，在合理范围内",
+          "evidence": []
+        },
+        {
+          "rule_id": "price_validity",
+          "rule_name": "价格优惠有效期",
+          "passed": true,
+          "score": 20,
+          "detail": "已说明价格优惠有效期",
+          "evidence": []
+        },
+        {
+          "rule_id": "preop_check",
+          "rule_name": "术前检查提及",
+          "passed": false,
+          "score": 5,
+          "detail": "未充分提及术前检查/评估",
+          "evidence": []
+        },
+        {
+          "rule_id": "postop_care",
+          "rule_name": "术后护理提及",
+          "passed": false,
+          "score": 5,
+          "detail": "未充分提及术后护理/注意事项",
+          "evidence": []
+        }
+      ]
+    },
+    {
+      "file_path": "D:\\trae-bz\\TraeProjects\\2264\\data\\samples\\海淀店_刘思琪_20240611_151729_undealt.wav",
+      "file_name": "海淀店_刘思琪_20240611_151729_undealt.wav",
+      "store": "海淀店",
+      "consultant": "刘思琪",
+      "record_date": "20240611",
+      "record_time": "151729",
+      "deal_status": "undealt",
+      "duration_seconds": 92,
+      "category": "light",
+      "total_score": 55,
+      "ban_word_hits": [
+        "保证"
+      ],
+      "interruption_count": 3,
+      "price_validity_clear": false,
+      "preop_mentioned": false,
+      "postop_mentioned": true,
+      "issues": [
+        "禁用词: 保证",
+        "价格优惠未说明有效期",
+        "未充分提及术前检查"
+      ],
+      "check_results": [
+        {
+          "rule_id": "ban_words",
+          "rule_name": "禁用词检测",
+          "passed": false,
+          "score": 5,
+          "detail": "检测到 1 个禁用词: 保证",
+          "evidence": [
+            "...有10年以上经验的，保证安全。\n顾客：那术后..."
+          ]
+        },
+        {
+          "rule_id": "interruption",
+          "rule_name": "打断顾客次数",
+          "passed": true,
+          "score": 20,
+          "detail": "打断 3 次，在合理范围内",
+          "evidence": []
+        },
+        {
+          "rule_id": "price_validity",
+          "rule_name": "价格优惠有效期",
+          "passed": false,
+          "score": 5,
+          "detail": "提及价格优惠但未说明有效期",
+          "evidence": []
+        },
+        {
+          "rule_id": "preop_check",
+          "rule_name": "术前检查提及",
+          "passed": false,
+          "score": 5,
+          "detail": "未充分提及术前检查/评估",
+          "evidence": []
+        },
+        {
+          "rule_id": "postop_care",
+          "rule_name": "术后护理提及",
+          "passed": true,
+          "score": 20,
+          "detail": "提及术后护理相关: 忌口, 恢复, 冰敷, 热敷",
+          "evidence": []
+        }
+      ]
+    },
+    {
+      "file_path": "D:\\trae-bz\\TraeProjects\\2264\\data\\samples\\海淀店_刘思琪_20240612_142213_undealt.wav",
+      "file_name": "海淀店_刘思琪_20240612_142213_undealt.wav",
+      "store": "海淀店",
+      "consultant": "刘思琪",
+      "record_date": "20240612",
+      "record_time": "142213",
+      "deal_status": "undealt",
+      "duration_seconds": 85,
+      "category": "light",
+      "total_score": 30,
+      "ban_word_hits": [
+        "绝对",
+        "一针见效",
+        "无任何副作用"
+      ],
+      "interruption_count": 2,
+      "price_validity_clear": true,
+      "preop_mentioned": false,
+      "postop_mentioned": false,
+      "issues": [
+        "禁用词: 绝对, 一针见效, 无任何副作用",
+        "未充分提及术前检查",
+        "未充分提及术后护理"
+      ],
+      "check_results": [
+        {
+          "rule_id": "ban_words",
+          "rule_name": "禁用词检测",
+          "passed": false,
+          "score": 0,
+          "detail": "检测到 3 个禁用词: 绝对, 一针见效, 无任何副作用",
+          "evidence": [
+            "...成分，无任何副作用，绝对安全。\n顾客：那需要...",
+            "...业的，效果立竿见影，一针见效。\n顾客：真的吗？能...",
+            "...人体本身就有的成分，无任何副作用，绝对安全。\n顾客：..."
+          ]
+        },
+        {
+          "rule_id": "interruption",
+          "rule_name": "打断顾客次数",
+          "passed": true,
+          "score": 20,
+          "detail": "打断 2 次，在合理范围内",
+          "evidence": []
+        },
+        {
+          "rule_id": "price_validity",
+          "rule_name": "价格优惠有效期",
+          "passed": true,
+          "score": 20,
+          "detail": "已说明价格优惠有效期",
+          "evidence": []
+        },
+        {
+          "rule_id": "preop_check",
+          "rule_name": "术前检查提及",
+          "passed": false,
+          "score": 5,
+          "detail": "未充分提及术前检查/评估",
+          "evidence": []
+        },
+        {
+          "rule_id": "postop_care",
+          "rule_name": "术后护理提及",
+          "passed": false,
+          "score": 5,
+          "detail": "未充分提及术后护理/注意事项",
+          "evidence": []
+        }
+      ]
+    },
+    {
+      "file_path": "D:\\trae-bz\\TraeProjects\\2264\\data\\samples\\海淀店_刘思琪_20240620_103840_dealt.wav",
+      "file_name": "海淀店_刘思琪_20240620_103840_dealt.wav",
+      "store": "海淀店",
+      "consultant": "刘思琪",
+      "record_date": "20240620",
+      "record_time": "103840",
+      "deal_status": "dealt",
+      "duration_seconds": 437,
+      "category": "light",
+      "total_score": 30,
+      "ban_word_hits": [
+        "保证",
+        "一针见效"
+      ],
+      "interruption_count": 5,
+      "price_validity_clear": true,
+      "preop_mentioned": false,
+      "postop_mentioned": false,
+      "issues": [
+        "禁用词: 保证, 一针见效",
+        "打断顾客 5 次",
+        "未充分提及术前检查",
+        "未充分提及术后护理"
+      ],
+      "check_results": [
+        {
+          "rule_id": "ban_words",
+          "rule_name": "禁用词检测",
+          "passed": false,
+          "score": 0,
+          "detail": "检测到 2 个禁用词: 保证, 一针见效",
+          "evidence": [
+            "...一针见效，[打断]，保证让您满意。价格方面现...",
+            "...(插话)，【抢话】，一针见效，[打断]，保证让您..."
+          ]
+        },
+        {
+          "rule_id": "interruption",
+          "rule_name": "打断顾客次数",
+          "passed": false,
+          "score": 10,
+          "detail": "打断 5 次，超过阈值 3 次",
+          "evidence": []
+        },
+        {
+          "rule_id": "price_validity",
+          "rule_name": "价格优惠有效期",
+          "passed": true,
+          "score": 20,
+          "detail": "已说明价格优惠有效期",
+          "evidence": []
+        },
+        {
+          "rule_id": "preop_check",
+          "rule_name": "术前检查提及",
+          "passed": false,
+          "score": 5,
+          "detail": "未充分提及术前检查/评估",
+          "evidence": []
+        },
+        {
+          "rule_id": "postop_care",
+          "rule_name": "术后护理提及",
+          "passed": false,
+          "score": 5,
+          "detail": "未充分提及术后护理/注意事项",
+          "evidence": []
+        }
+      ]
+    },
+    {
+      "file_path": "D:\\trae-bz\\TraeProjects\\2264\\data\\samples\\海淀店_孙晓雯_20240612_162417_dealt.wav",
+      "file_name": "海淀店_孙晓雯_20240612_162417_dealt.wav",
+      "store": "海淀店",
+      "consultant": "孙晓雯",
+      "record_date": "20240612",
+      "record_time": "162417",
+      "deal_status": "dealt",
+      "duration_seconds": 652,
+      "category": "light",
+      "total_score": 55,
+      "ban_word_hits": [
+        "绝对",
+        "无任何副作用"
+      ],
+      "interruption_count": 0,
+      "price_validity_clear": true,
+      "preop_mentioned": false,
+      "postop_mentioned": true,
+      "issues": [
+        "禁用词: 绝对, 无任何副作用",
+        "未充分提及术前检查"
+      ],
+      "check_results": [
+        {
+          "rule_id": "ban_words",
+          "rule_name": "禁用词检测",
+          "passed": false,
+          "score": 0,
+          "detail": "检测到 2 个禁用词: 绝对, 无任何副作用",
+          "evidence": [
+            "...针我们这边很受欢迎，绝对安全，无任何副作用。...",
+            "...很受欢迎，绝对安全，无任何副作用。现在活动价很划算，..."
+          ]
+        },
+        {
+          "rule_id": "interruption",
+          "rule_name": "打断顾客次数",
+          "passed": true,
+          "score": 20,
+          "detail": "打断 0 次，在合理范围内",
+          "evidence": []
+        },
+        {
+          "rule_id": "price_validity",
+          "rule_name": "价格优惠有效期",
+          "passed": true,
+          "score": 20,
+          "detail": "已说明价格优惠有效期",
+          "evidence": []
+        },
+        {
+          "rule_id": "preop_check",
+          "rule_name": "术前检查提及",
+          "passed": false,
+          "score": 5,
+          "detail": "未充分提及术前检查/评估",
+          "evidence": []
+        },
+        {
+          "rule_id": "postop_care",
+          "rule_name": "术后护理提及",
+          "passed": true,
+          "score": 20,
+          "detail": "提及术后护理相关: 防晒, 补水, 恢复",
+          "evidence": []
+        }
+      ]
+    },
+    {
+      "file_path": "D:\\trae-bz\\TraeProjects\\2264\\data\\samples\\海淀店_孙晓雯_20240613_095120_undealt.wav",
+      "file_name": "海淀店_孙晓雯_20240613_095120_undealt.wav",
+      "store": "海淀店",
+      "consultant": "孙晓雯",
+      "record_date": "20240613",
+      "record_time": "095120",
+      "deal_status": "undealt",
+      "duration_seconds": 829,
+      "category": "light",
+      "total_score": 40,
+      "ban_word_hits": [
+        "保证",
+        "一针见效"
+      ],
+      "interruption_count": 2,
+      "price_validity_clear": true,
+      "preop_mentioned": false,
+      "postop_mentioned": false,
+      "issues": [
+        "禁用词: 保证, 一针见效",
+        "未充分提及术前检查",
+        "未充分提及术后护理"
+      ],
+      "check_results": [
+        {
+          "rule_id": "ban_words",
+          "rule_name": "禁用词检测",
+          "passed": false,
+          "score": 0,
+          "detail": "检测到 2 个禁用词: 保证, 一针见效",
+          "evidence": [
+            "...效果很好，一针见效，保证让您满意。价格方面现...",
+            "...玻尿酸隆鼻效果很好，一针见效，保证让您满意。价格..."
+          ]
+        },
+        {
+          "rule_id": "interruption",
+          "rule_name": "打断顾客次数",
+          "passed": true,
+          "score": 20,
+          "detail": "打断 2 次，在合理范围内",
+          "evidence": []
+        },
+        {
+          "rule_id": "price_validity",
+          "rule_name": "价格优惠有效期",
+          "passed": true,
+          "score": 20,
+          "detail": "已说明价格优惠有效期",
+          "evidence": []
+        },
+        {
+          "rule_id": "preop_check",
+          "rule_name": "术前检查提及",
+          "passed": false,
+          "score": 5,
+          "detail": "未充分提及术前检查/评估",
+          "evidence": []
+        },
+        {
+          "rule_id": "postop_care",
+          "rule_name": "术后护理提及",
+          "passed": false,
+          "score": 5,
+          "detail": "未充分提及术后护理/注意事项",
+          "evidence": []
+        }
+      ]
+    },
+    {
+      "file_path": "D:\\trae-bz\\TraeProjects\\2264\\data\\samples\\海淀店_孙晓雯_20240620_145349_dealt.wav",
+      "file_name": "海淀店_孙晓雯_20240620_145349_dealt.wav",
+      "store": "海淀店",
+      "consultant": "孙晓雯",
+      "record_date": "20240620",
+      "record_time": "145349",
+      "deal_status": "dealt",
+      "duration_seconds": 293,
+      "category": "light",
+      "total_score": 35,
+      "ban_word_hits": [
+        "保证",
+        "一针见效"
+      ],
+      "interruption_count": 4,
+      "price_validity_clear": true,
+      "preop_mentioned": false,
+      "postop_mentioned": false,
+      "issues": [
+        "禁用词: 保证, 一针见效",
+        "打断顾客 4 次",
+        "未充分提及术前检查",
+        "未充分提及术后护理"
+      ],
+      "check_results": [
+        {
+          "rule_id": "ban_words",
+          "rule_name": "禁用词检测",
+          "passed": false,
+          "score": 0,
+          "detail": "检测到 2 个禁用词: 保证, 一针见效",
+          "evidence": [
+            "...效果很好，一针见效，保证让您满意。价格方面现...",
+            "...玻尿酸隆鼻效果很好，一针见效，保证让您满意。价格..."
+          ]
+        },
+        {
+          "rule_id": "interruption",
+          "rule_name": "打断顾客次数",
+          "passed": false,
+          "score": 15,
+          "detail": "打断 4 次，超过阈值 3 次",
+          "evidence": []
+        },
+        {
+          "rule_id": "price_validity",
+          "rule_name": "价格优惠有效期",
+          "passed": true,
+          "score": 20,
+          "detail": "已说明价格优惠有效期",
+          "evidence": []
+        },
+        {
+          "rule_id": "preop_check",
+          "rule_name": "术前检查提及",
+          "passed": false,
+          "score": 5,
+          "detail": "未充分提及术前检查/评估",
+          "evidence": []
+        },
+        {
+          "rule_id": "postop_care",
+          "rule_name": "术后护理提及",
+          "passed": false,
+          "score": 5,
+          "detail": "未充分提及术后护理/注意事项",
+          "evidence": []
+        }
+      ]
+    },
+    {
+      "file_path": "D:\\trae-bz\\TraeProjects\\2264\\data\\samples\\海淀店_张美丽_20240610_100940_dealt.wav",
+      "file_name": "海淀店_张美丽_20240610_100940_dealt.wav",
+      "store": "海淀店",
+      "consultant": "张美丽",
+      "record_date": "20240610",
+      "record_time": "100940",
+      "deal_status": "dealt",
+      "duration_seconds": 86,
+      "category": "light",
+      "total_score": 85,
+      "ban_word_hits": [],
+      "interruption_count": 3,
+      "price_validity_clear": true,
+      "preop_mentioned": true,
+      "postop_mentioned": false,
+      "issues": [
+        "未充分提及术后护理"
+      ],
+      "check_results": [
+        {
+          "rule_id": "ban_words",
+          "rule_name": "禁用词检测",
+          "passed": true,
+          "score": 20,
+          "detail": "未检测到禁用词",
+          "evidence": []
+        },
+        {
+          "rule_id": "interruption",
+          "rule_name": "打断顾客次数",
+          "passed": true,
+          "score": 20,
+          "detail": "打断 3 次，在合理范围内",
+          "evidence": []
+        },
+        {
+          "rule_id": "price_validity",
+          "rule_name": "价格优惠有效期",
+          "passed": true,
+          "score": 20,
+          "detail": "已说明价格优惠有效期",
+          "evidence": []
+        },
+        {
+          "rule_id": "preop_check",
+          "rule_name": "术前检查提及",
+          "passed": true,
+          "score": 20,
+          "detail": "提及术前检查相关: 术前检查",
+          "evidence": []
+        },
+        {
+          "rule_id": "postop_care",
+          "rule_name": "术后护理提及",
+          "passed": false,
+          "score": 5,
+          "detail": "未充分提及术后护理/注意事项",
+          "evidence": []
+        }
+      ]
+    },
+    {
+      "file_path": "D:\\trae-bz\\TraeProjects\\2264\\data\\samples\\海淀店_张美丽_20240613_113231_dealt.wav",
+      "file_name": "海淀店_张美丽_20240613_113231_dealt.wav",
+      "store": "海淀店",
+      "consultant": "张美丽",
+      "record_date": "20240613",
+      "record_time": "113231",
+      "deal_status": "dealt",
+      "duration_seconds": 326,
+      "category": "light",
+      "total_score": 55,
+      "ban_word_hits": [
+        "保证"
+      ],
+      "interruption_count": 1,
+      "price_validity_clear": true,
+      "preop_mentioned": false,
+      "postop_mentioned": false,
+      "issues": [
+        "禁用词: 保证",
+        "未充分提及术前检查",
+        "未充分提及术后护理"
+      ],
+      "check_results": [
+        {
+          "rule_id": "ban_words",
+          "rule_name": "禁用词检测",
+          "passed": false,
+          "score": 5,
+          "detail": "检测到 1 个禁用词: 保证",
+          "evidence": [
+            "...填充项目我们很专业，保证效果持久。现在有优惠..."
+          ]
+        },
+        {
+          "rule_id": "interruption",
+          "rule_name": "打断顾客次数",
+          "passed": true,
+          "score": 20,
+          "detail": "打断 1 次，在合理范围内",
+          "evidence": []
+        },
+        {
+          "rule_id": "price_validity",
+          "rule_name": "价格优惠有效期",
+          "passed": true,
+          "score": 20,
+          "detail": "已说明价格优惠有效期",
+          "evidence": []
+        },
+        {
+          "rule_id": "preop_check",
+          "rule_name": "术前检查提及",
+          "passed": false,
+          "score": 5,
+          "detail": "未充分提及术前检查/评估",
+          "evidence": []
+        },
+        {
+          "rule_id": "postop_care",
+          "rule_name": "术后护理提及",
+          "passed": false,
+          "score": 5,
+          "detail": "未充分提及术后护理/注意事项",
+          "evidence": []
+        }
+      ]
+    },
+    {
+      "file_path": "D:\\trae-bz\\TraeProjects\\2264\\data\\samples\\海淀店_张美丽_20240616_182933_undealt.wav",
+      "file_name": "海淀店_张美丽_20240616_182933_undealt.wav",
+      "store": "海淀店",
+      "consultant": "张美丽",
+      "record_date": "20240616",
+      "record_time": "182933",
+      "deal_status": "undealt",
+      "duration_seconds": 74,
+      "category": "light",
+      "total_score": 55,
+      "ban_word_hits": [
+        "永不",
+        "零风险"
+      ],
+      "interruption_count": 2,
+      "price_validity_clear": true,
+      "preop_mentioned": false,
+      "postop_mentioned": true,
+      "issues": [
+        "禁用词: 永不, 零风险",
+        "未充分提及术前检查"
+      ],
+      "check_results": [
+        {
+          "rule_id": "ban_words",
+          "rule_name": "禁用词检测",
+          "passed": false,
+          "score": 0,
+          "detail": "检测到 2 个禁用词: 永不, 零风险",
+          "evidence": [
+            "...这个您放心，我们承诺永不反弹。\n顾客：价格贵...",
+            "...师：不会的，很安全，零风险。（打断）您可以先做..."
+          ]
+        },
+        {
+          "rule_id": "interruption",
+          "rule_name": "打断顾客次数",
+          "passed": true,
+          "score": 20,
+          "detail": "打断 2 次，在合理范围内",
+          "evidence": []
+        },
+        {
+          "rule_id": "price_validity",
+          "rule_name": "价格优惠有效期",
+          "passed": true,
+          "score": 20,
+          "detail": "已说明价格优惠有效期",
+          "evidence": []
+        },
+        {
+          "rule_id": "preop_check",
+          "rule_name": "术前检查提及",
+          "passed": false,
+          "score": 5,
+          "detail": "未充分提及术前检查/评估",
+          "evidence": []
+        },
+        {
+          "rule_id": "postop_care",
+          "rule_name": "术后护理提及",
+          "passed": true,
+          "score": 20,
+          "detail": "提及术后护理相关: 防晒, 补水, 恢复",
+          "evidence": []
+        }
+      ]
+    },
+    {
+      "file_path": "D:\\trae-bz\\TraeProjects\\2264\\data\\samples\\海淀店_张美丽_20240620_153804_undealt.wav",
+      "file_name": "海淀店_张美丽_20240620_153804_undealt.wav",
+      "store": "海淀店",
+      "consultant": "张美丽",
+      "record_date": "20240620",
+      "record_time": "153804",
+      "deal_status": "undealt",
+      "duration_seconds": 74,
+      "category": "light",
+      "total_score": 55,
+      "ban_word_hits": [
+        "永不",
+        "零风险"
+      ],
+      "interruption_count": 2,
+      "price_validity_clear": true,
+      "preop_mentioned": false,
+      "postop_mentioned": true,
+      "issues": [
+        "禁用词: 永不, 零风险",
+        "未充分提及术前检查"
+      ],
+      "check_results": [
+        {
+          "rule_id": "ban_words",
+          "rule_name": "禁用词检测",
+          "passed": false,
+          "score": 0,
+          "detail": "检测到 2 个禁用词: 永不, 零风险",
+          "evidence": [
+            "...这个您放心，我们承诺永不反弹。\n顾客：价格贵...",
+            "...师：不会的，很安全，零风险。（打断）您可以先做..."
+          ]
+        },
+        {
+          "rule_id": "interruption",
+          "rule_name": "打断顾客次数",
+          "passed": true,
+          "score": 20,
+          "detail": "打断 2 次，在合理范围内",
+          "evidence": []
+        },
+        {
+          "rule_id": "price_validity",
+          "rule_name": "价格优惠有效期",
+          "passed": true,
+          "score": 20,
+          "detail": "已说明价格优惠有效期",
+          "evidence": []
+        },
+        {
+          "rule_id": "preop_check",
+          "rule_name": "术前检查提及",
+          "passed": false,
+          "score": 5,
+          "detail": "未充分提及术前检查/评估",
+          "evidence": []
+        },
+        {
+          "rule_id": "postop_care",
+          "rule_name": "术后护理提及",
+          "passed": true,
+          "score": 20,
+          "detail": "提及术后护理相关: 防晒, 补水, 恢复",
+          "evidence": []
+        }
+      ]
+    },
+    {
+      "file_path": "D:\\trae-bz\\TraeProjects\\2264\\data\\samples\\海淀店_王婷婷_20240611_125836_undealt.wav",
+      "file_name": "海淀店_王婷婷_20240611_125836_undealt.wav",
+      "store": "海淀店",
+      "consultant": "王婷婷",
+      "record_date": "20240611",
+      "record_time": "125836",
+      "deal_status": "undealt",
+      "duration_seconds": 371,
+      "category": "light",
+      "total_score": 40,
+      "ban_word_hits": [
+        "保证",
+        "一针见效"
+      ],
+      "interruption_count": 1,
+      "price_validity_clear": true,
+      "preop_mentioned": false,
+      "postop_mentioned": false,
+      "issues": [
+        "禁用词: 保证, 一针见效",
+        "未充分提及术前检查",
+        "未充分提及术后护理"
+      ],
+      "check_results": [
+        {
+          "rule_id": "ban_words",
+          "rule_name": "禁用词检测",
+          "passed": false,
+          "score": 0,
+          "detail": "检测到 2 个禁用词: 保证, 一针见效",
+          "evidence": [
+            "...效果很好，一针见效，保证让您满意。价格方面现...",
+            "...玻尿酸隆鼻效果很好，一针见效，保证让您满意。价格..."
+          ]
+        },
+        {
+          "rule_id": "interruption",
+          "rule_name": "打断顾客次数",
+          "passed": true,
+          "score": 20,
+          "detail": "打断 1 次，在合理范围内",
+          "evidence": []
+        },
+        {
+          "rule_id": "price_validity",
+          "rule_name": "价格优惠有效期",
+          "passed": true,
+          "score": 20,
+          "detail": "已说明价格优惠有效期",
+          "evidence": []
+        },
+        {
+          "rule_id": "preop_check",
+          "rule_name": "术前检查提及",
+          "passed": false,
+          "score": 5,
+          "detail": "未充分提及术前检查/评估",
+          "evidence": []
+        },
+        {
+          "rule_id": "postop_care",
+          "rule_name": "术后护理提及",
+          "passed": false,
+          "score": 5,
+          "detail": "未充分提及术后护理/注意事项",
+          "evidence": []
+        }
+      ]
+    },
+    {
+      "file_path": "D:\\trae-bz\\TraeProjects\\2264\\data\\samples\\海淀店_王婷婷_20240612_130815_undealt.wav",
+      "file_name": "海淀店_王婷婷_20240612_130815_undealt.wav",
+      "store": "海淀店",
+      "consultant": "王婷婷",
+      "record_date": "20240612",
+      "record_time": "130815",
+      "deal_status": "undealt",
+      "duration_seconds": 689,
+      "category": "light",
+      "total_score": 40,
+      "ban_word_hits": [
+        "保证",
+        "一针见效"
+      ],
+      "interruption_count": 3,
+      "price_validity_clear": true,
+      "preop_mentioned": false,
+      "postop_mentioned": false,
+      "issues": [
+        "禁用词: 保证, 一针见效",
+        "未充分提及术前检查",
+        "未充分提及术后护理"
+      ],
+      "check_results": [
+        {
+          "rule_id": "ban_words",
+          "rule_name": "禁用词检测",
+          "passed": false,
+          "score": 0,
+          "detail": "检测到 2 个禁用词: 保证, 一针见效",
+          "evidence": [
+            "...一针见效，[打断]，保证让您满意。价格方面现...",
+            "...玻尿酸隆鼻效果很好，一针见效，[打断]，保证让您..."
+          ]
+        },
+        {
+          "rule_id": "interruption",
+          "rule_name": "打断顾客次数",
+          "passed": true,
+          "score": 20,
+          "detail": "打断 3 次，在合理范围内",
+          "evidence": []
+        },
+        {
+          "rule_id": "price_validity",
+          "rule_name": "价格优惠有效期",
+          "passed": true,
+          "score": 20,
+          "detail": "已说明价格优惠有效期",
+          "evidence": []
+        },
+        {
+          "rule_id": "preop_check",
+          "rule_name": "术前检查提及",
+          "passed": false,
+          "score": 5,
+          "detail": "未充分提及术前检查/评估",
+          "evidence": []
+        },
+        {
+          "rule_id": "postop_care",
+          "rule_name": "术后护理提及",
+          "passed": false,
+          "score": 5,
+          "detail": "未充分提及术后护理/注意事项",
+          "evidence": []
+        }
+      ]
+    },
+    {
+      "file_path": "D:\\trae-bz\\TraeProjects\\2264\\data\\samples\\海淀店_王婷婷_20240613_162556_undealt.wav",
+      "file_name": "海淀店_王婷婷_20240613_162556_undealt.wav",
+      "store": "海淀店",
+      "consultant": "王婷婷",
+      "record_date": "20240613",
+      "record_time": "162556",
+      "deal_status": "undealt",
+      "duration_seconds": 85,
+      "category": "light",
+      "total_score": 30,
+      "ban_word_hits": [
+        "绝对",
+        "一针见效",
+        "无任何副作用"
+      ],
+      "interruption_count": 2,
+      "price_validity_clear": true,
+      "preop_mentioned": false,
+      "postop_mentioned": false,
+      "issues": [
+        "禁用词: 绝对, 一针见效, 无任何副作用",
+        "未充分提及术前检查",
+        "未充分提及术后护理"
+      ],
+      "check_results": [
+        {
+          "rule_id": "ban_words",
+          "rule_name": "禁用词检测",
+          "passed": false,
+          "score": 0,
+          "detail": "检测到 3 个禁用词: 绝对, 一针见效, 无任何副作用",
+          "evidence": [
+            "...成分，无任何副作用，绝对安全。\n顾客：那需要...",
+            "...业的，效果立竿见影，一针见效。\n顾客：真的吗？能...",
+            "...人体本身就有的成分，无任何副作用，绝对安全。\n顾客：..."
+          ]
+        },
+        {
+          "rule_id": "interruption",
+          "rule_name": "打断顾客次数",
+          "passed": true,
+          "score": 20,
+          "detail": "打断 2 次，在合理范围内",
+          "evidence": []
+        },
+        {
+          "rule_id": "price_validity",
+          "rule_name": "价格优惠有效期",
+          "passed": true,
+          "score": 20,
+          "detail": "已说明价格优惠有效期",
+          "evidence": []
+        },
+        {
+          "rule_id": "preop_check",
+          "rule_name": "术前检查提及",
+          "passed": false,
+          "score": 5,
+          "detail": "未充分提及术前检查/评估",
+          "evidence": []
+        },
+        {
+          "rule_id": "postop_care",
+          "rule_name": "术后护理提及",
+          "passed": false,
+          "score": 5,
+          "detail": "未充分提及术后护理/注意事项",
+          "evidence": []
+        }
+      ]
+    },
+    {
+      "file_path": "D:\\trae-bz\\TraeProjects\\2264\\data\\samples\\海淀店_王婷婷_20240619_155737_undealt.wav",
+      "file_name": "海淀店_王婷婷_20240619_155737_undealt.wav",
+      "store": "海淀店",
+      "consultant": "王婷婷",
+      "record_date": "20240619",
+      "record_time": "155737",
+      "deal_status": "undealt",
+      "duration_seconds": 85,
+      "category": "light",
+      "total_score": 30,
+      "ban_word_hits": [
+        "绝对",
+        "一针见效",
+        "无任何副作用"
+      ],
+      "interruption_count": 2,
+      "price_validity_clear": true,
+      "preop_mentioned": false,
+      "postop_mentioned": false,
+      "issues": [
+        "禁用词: 绝对, 一针见效, 无任何副作用",
+        "未充分提及术前检查",
+        "未充分提及术后护理"
+      ],
+      "check_results": [
+        {
+          "rule_id": "ban_words",
+          "rule_name": "禁用词检测",
+          "passed": false,
+          "score": 0,
+          "detail": "检测到 3 个禁用词: 绝对, 一针见效, 无任何副作用",
+          "evidence": [
+            "...成分，无任何副作用，绝对安全。\n顾客：那需要...",
+            "...业的，效果立竿见影，一针见效。\n顾客：真的吗？能...",
+            "...人体本身就有的成分，无任何副作用，绝对安全。\n顾客：..."
+          ]
+        },
+        {
+          "rule_id": "interruption",
+          "rule_name": "打断顾客次数",
+          "passed": true,
+          "score": 20,
+          "detail": "打断 2 次，在合理范围内",
+          "evidence": []
+        },
+        {
+          "rule_id": "price_validity",
+          "rule_name": "价格优惠有效期",
+          "passed": true,
+          "score": 20,
+          "detail": "已说明价格优惠有效期",
+          "evidence": []
+        },
+        {
+          "rule_id": "preop_check",
+          "rule_name": "术前检查提及",
+          "passed": false,
+          "score": 5,
+          "detail": "未充分提及术前检查/评估",
+          "evidence": []
+        },
+        {
+          "rule_id": "postop_care",
+          "rule_name": "术后护理提及",
+          "passed": false,
+          "score": 5,
+          "detail": "未充分提及术后护理/注意事项",
+          "evidence": []
+        }
+      ]
+    },
+    {
+      "file_path": "D:\\trae-bz\\TraeProjects\\2264\\data\\samples\\西城店_周梦瑶_20240613_102101_dealt.wav",
+      "file_name": "西城店_周梦瑶_20240613_102101_dealt.wav",
+      "store": "西城店",
+      "consultant": "周梦瑶",
+      "record_date": "20240613",
+      "record_time": "102101",
+      "deal_status": "dealt",
+      "duration_seconds": 86,
+      "category": "light",
+      "total_score": 85,
+      "ban_word_hits": [],
+      "interruption_count": 3,
+      "price_validity_clear": true,
+      "preop_mentioned": true,
+      "postop_mentioned": false,
+      "issues": [
+        "未充分提及术后护理"
+      ],
+      "check_results": [
+        {
+          "rule_id": "ban_words",
+          "rule_name": "禁用词检测",
+          "passed": true,
+          "score": 20,
+          "detail": "未检测到禁用词",
+          "evidence": []
+        },
+        {
+          "rule_id": "interruption",
+          "rule_name": "打断顾客次数",
+          "passed": true,
+          "score": 20,
+          "detail": "打断 3 次，在合理范围内",
+          "evidence": []
+        },
+        {
+          "rule_id": "price_validity",
+          "rule_name": "价格优惠有效期",
+          "passed": true,
+          "score": 20,
+          "detail": "已说明价格优惠有效期",
+          "evidence": []
+        },
+        {
+          "rule_id": "preop_check",
+          "rule_name": "术前检查提及",
+          "passed": true,
+          "score": 20,
+          "detail": "提及术前检查相关: 术前检查",
+          "evidence": []
+        },
+        {
+          "rule_id": "postop_care",
+          "rule_name": "术后护理提及",
+          "passed": false,
+          "score": 5,
+          "detail": "未充分提及术后护理/注意事项",
+          "evidence": []
+        }
+      ]
+    },
+    {
+      "file_path": "D:\\trae-bz\\TraeProjects\\2264\\data\\samples\\西城店_周梦瑶_20240613_174846_dealt.wav",
+      "file_name": "西城店_周梦瑶_20240613_174846_dealt.wav",
+      "store": "西城店",
+      "consultant": "周梦瑶",
+      "record_date": "20240613",
+      "record_time": "174846",
+      "deal_status": "dealt",
+      "duration_seconds": 92,
+      "category": "light",
+      "total_score": 85,
+      "ban_word_hits": [
+        "绝对"
+      ],
+      "interruption_count": 1,
+      "price_validity_clear": true,
+      "preop_mentioned": true,
+      "postop_mentioned": true,
+      "issues": [
+        "禁用词: 绝对"
+      ],
+      "check_results": [
+        {
+          "rule_id": "ban_words",
+          "rule_name": "禁用词检测",
+          "passed": false,
+          "score": 5,
+          "detail": "检测到 1 个禁用词: 绝对",
+          "evidence": [
+            "...术安全吗？\n咨询师：绝对安全，我们做了上万例..."
+          ]
+        },
+        {
+          "rule_id": "interruption",
+          "rule_name": "打断顾客次数",
+          "passed": true,
+          "score": 20,
+          "detail": "打断 1 次，在合理范围内",
+          "evidence": []
+        },
+        {
+          "rule_id": "price_validity",
+          "rule_name": "价格优惠有效期",
+          "passed": true,
+          "score": 20,
+          "detail": "已说明价格优惠有效期",
+          "evidence": []
+        },
+        {
+          "rule_id": "preop_check",
+          "rule_name": "术前检查提及",
+          "passed": true,
+          "score": 20,
+          "detail": "提及术前检查相关: 血常规, 凝血",
+          "evidence": []
+        },
+        {
+          "rule_id": "postop_care",
+          "rule_name": "术后护理提及",
+          "passed": true,
+          "score": 20,
+          "detail": "提及术后护理相关: 术后护理, 护理, 忌口, 恢复",
+          "evidence": []
+        }
+      ]
+    },
+    {
+      "file_path": "D:\\trae-bz\\TraeProjects\\2264\\data\\samples\\西城店_周梦瑶_20240614_154241_undealt.wav",
+      "file_name": "西城店_周梦瑶_20240614_154241_undealt.wav",
+      "store": "西城店",
+      "consultant": "周梦瑶",
+      "record_date": "20240614",
+      "record_time": "154241",
+      "deal_status": "undealt",
+      "duration_seconds": 74,
+      "category": "light",
+      "total_score": 55,
+      "ban_word_hits": [
+        "永不",
+        "零风险"
+      ],
+      "interruption_count": 2,
+      "price_validity_clear": true,
+      "preop_mentioned": false,
+      "postop_mentioned": true,
+      "issues": [
+        "禁用词: 永不, 零风险",
+        "未充分提及术前检查"
+      ],
+      "check_results": [
+        {
+          "rule_id": "ban_words",
+          "rule_name": "禁用词检测",
+          "passed": false,
+          "score": 0,
+          "detail": "检测到 2 个禁用词: 永不, 零风险",
+          "evidence": [
+            "...这个您放心，我们承诺永不反弹。\n顾客：价格贵...",
+            "...师：不会的，很安全，零风险。（打断）您可以先做..."
+          ]
+        },
+        {
+          "rule_id": "interruption",
+          "rule_name": "打断顾客次数",
+          "passed": true,
+          "score": 20,
+          "detail": "打断 2 次，在合理范围内",
+          "evidence": []
+        },
+        {
+          "rule_id": "price_validity",
+          "rule_name": "价格优惠有效期",
+          "passed": true,
+          "score": 20,
+          "detail": "已说明价格优惠有效期",
+          "evidence": []
+        },
+        {
+          "rule_id": "preop_check",
+          "rule_name": "术前检查提及",
+          "passed": false,
+          "score": 5,
+          "detail": "未充分提及术前检查/评估",
+          "evidence": []
+        },
+        {
+          "rule_id": "postop_care",
+          "rule_name": "术后护理提及",
+          "passed": true,
+          "score": 20,
+          "detail": "提及术后护理相关: 防晒, 补水, 恢复",
+          "evidence": []
+        }
+      ]
+    },
+    {
+      "file_path": "D:\\trae-bz\\TraeProjects\\2264\\data\\samples\\西城店_周梦瑶_20240617_172807_dealt.wav",
+      "file_name": "西城店_周梦瑶_20240617_172807_dealt.wav",
+      "store": "西城店",
+      "consultant": "周梦瑶",
+      "record_date": "20240617",
+      "record_time": "172807",
+      "deal_status": "dealt",
+      "duration_seconds": 771,
+      "category": "light",
+      "total_score": 40,
+      "ban_word_hits": [
+        "保证",
+        "一针见效"
+      ],
+      "interruption_count": 3,
+      "price_validity_clear": true,
+      "preop_mentioned": false,
+      "postop_mentioned": false,
+      "issues": [
+        "禁用词: 保证, 一针见效",
+        "未充分提及术前检查",
+        "未充分提及术后护理"
+      ],
+      "check_results": [
+        {
+          "rule_id": "ban_words",
+          "rule_name": "禁用词检测",
+          "passed": false,
+          "score": 0,
+          "detail": "检测到 2 个禁用词: 保证, 一针见效",
+          "evidence": [
+            "...效果很好，一针见效，保证让您满意。价格方面现...",
+            "...玻尿酸隆鼻效果很好，一针见效，保证让您满意。价格..."
+          ]
+        },
+        {
+          "rule_id": "interruption",
+          "rule_name": "打断顾客次数",
+          "passed": true,
+          "score": 20,
+          "detail": "打断 3 次，在合理范围内",
+          "evidence": []
+        },
+        {
+          "rule_id": "price_validity",
+          "rule_name": "价格优惠有效期",
+          "passed": true,
+          "score": 20,
+          "detail": "已说明价格优惠有效期",
+          "evidence": []
+        },
+        {
+          "rule_id": "preop_check",
+          "rule_name": "术前检查提及",
+          "passed": false,
+          "score": 5,
+          "detail": "未充分提及术前检查/评估",
+          "evidence": []
+        },
+        {
+          "rule_id": "postop_care",
+          "rule_name": "术后护理提及",
+          "passed": false,
+          "score": 5,
+          "detail": "未充分提及术后护理/注意事项",
+          "evidence": []
+        }
+      ]
+    },
+    {
+      "file_path": "D:\\trae-bz\\TraeProjects\\2264\\data\\samples\\西城店_周梦瑶_20240619_120004_dealt.wav",
+      "file_name": "西城店_周梦瑶_20240619_120004_dealt.wav",
+      "store": "西城店",
+      "consultant": "周梦瑶",
+      "record_date": "20240619",
+      "record_time": "120004",
+      "deal_status": "dealt",
+      "duration_seconds": 718,
+      "category": "light",
+      "total_score": 55,
+      "ban_word_hits": [],
+      "interruption_count": 3,
+      "price_validity_clear": false,
+      "preop_mentioned": false,
+      "postop_mentioned": false,
+      "issues": [
+        "价格优惠未说明有效期",
+        "未充分提及术前检查",
+        "未充分提及术后护理"
+      ],
+      "check_results": [
+        {
+          "rule_id": "ban_words",
+          "rule_name": "禁用词检测",
+          "passed": true,
+          "score": 20,
+          "detail": "未检测到禁用词",
+          "evidence": []
+        },
+        {
+          "rule_id": "interruption",
+          "rule_name": "打断顾客次数",
+          "passed": true,
+          "score": 20,
+          "detail": "打断 3 次，在合理范围内",
+          "evidence": []
+        },
+        {
+          "rule_id": "price_validity",
+          "rule_name": "价格优惠有效期",
+          "passed": false,
+          "score": 5,
+          "detail": "提及价格优惠但未说明有效期",
+          "evidence": []
+        },
+        {
+          "rule_id": "preop_check",
+          "rule_name": "术前检查提及",
+          "passed": false,
+          "score": 5,
+          "detail": "未充分提及术前检查/评估",
+          "evidence": []
+        },
+        {
+          "rule_id": "postop_care",
+          "rule_name": "术后护理提及",
+          "passed": false,
+          "score": 5,
+          "detail": "未充分提及术后护理/注意事项",
+          "evidence": []
+        }
+      ]
+    },
+    {
+      "file_path": "D:\\trae-bz\\TraeProjects\\2264\\data\\samples\\西城店_孙晓雯_20240611_165204_dealt.wav",
+      "file_name": "西城店_孙晓雯_20240611_165204_dealt.wav",
+      "store": "西城店",
+      "consultant": "孙晓雯",
+      "record_date": "20240611",
+      "record_time": "165204",
+      "deal_status": "dealt",
+      "duration_seconds": 92,
+      "category": "light",
+      "total_score": 55,
+      "ban_word_hits": [
+        "保证"
+      ],
+      "interruption_count": 3,
+      "price_validity_clear": false,
+      "preop_mentioned": false,
+      "postop_mentioned": true,
+      "issues": [
+        "禁用词: 保证",
+        "价格优惠未说明有效期",
+        "未充分提及术前检查"
+      ],
+      "check_results": [
+        {
+          "rule_id": "ban_words",
+          "rule_name": "禁用词检测",
+          "passed": false,
+          "score": 5,
+          "detail": "检测到 1 个禁用词: 保证",
+          "evidence": [
+            "...有10年以上经验的，保证安全。\n顾客：那术后..."
+          ]
+        },
+        {
+          "rule_id": "interruption",
+          "rule_name": "打断顾客次数",
+          "passed": true,
+          "score": 20,
+          "detail": "打断 3 次，在合理范围内",
+          "evidence": []
+        },
+        {
+          "rule_id": "price_validity",
+          "rule_name": "价格优惠有效期",
+          "passed": false,
+          "score": 5,
+          "detail": "提及价格优惠但未说明有效期",
+          "evidence": []
+        },
+        {
+          "rule_id": "preop_check",
+          "rule_name": "术前检查提及",
+          "passed": false,
+          "score": 5,
+          "detail": "未充分提及术前检查/评估",
+          "evidence": []
+        },
+        {
+          "rule_id": "postop_care",
+          "rule_name": "术后护理提及",
+          "passed": true,
+          "score": 20,
+          "detail": "提及术后护理相关: 忌口, 恢复, 冰敷, 热敷",
+          "evidence": []
+        }
+      ]
+    },
+    {
+      "file_path": "D:\\trae-bz\\TraeProjects\\2264\\data\\samples\\西城店_孙晓雯_20240612_163510_undealt.wav",
+      "file_name": "西城店_孙晓雯_20240612_163510_undealt.wav",
+      "store": "西城店",
+      "consultant": "孙晓雯",
+      "record_date": "20240612",
+      "record_time": "163510",
+      "deal_status": "undealt",
+      "duration_seconds": 587,
+      "category": "light",
+      "total_score": 50,
+      "ban_word_hits": [
+        "绝对",
+        "无任何副作用"
+      ],
+      "interruption_count": 4,
+      "price_validity_clear": true,
+      "preop_mentioned": false,
+      "postop_mentioned": true,
+      "issues": [
+        "禁用词: 绝对, 无任何副作用",
+        "打断顾客 4 次",
+        "未充分提及术前检查"
+      ],
+      "check_results": [
+        {
+          "rule_id": "ban_words",
+          "rule_name": "禁用词检测",
+          "passed": false,
+          "score": 0,
+          "detail": "检测到 2 个禁用词: 绝对, 无任何副作用",
+          "evidence": [
+            "...针我们这边很受欢迎，绝对安全，无任何副作用。...",
+            "...很受欢迎，绝对安全，无任何副作用。现在活动价很划算，..."
+          ]
+        },
+        {
+          "rule_id": "interruption",
+          "rule_name": "打断顾客次数",
+          "passed": false,
+          "score": 15,
+          "detail": "打断 4 次，超过阈值 3 次",
+          "evidence": []
+        },
+        {
+          "rule_id": "price_validity",
+          "rule_name": "价格优惠有效期",
+          "passed": true,
+          "score": 20,
+          "detail": "已说明价格优惠有效期",
+          "evidence": []
+        },
+        {
+          "rule_id": "preop_check",
+          "rule_name": "术前检查提及",
+          "passed": false,
+          "score": 5,
+          "detail": "未充分提及术前检查/评估",
+          "evidence": []
+        },
+        {
+          "rule_id": "postop_care",
+          "rule_name": "术后护理提及",
+          "passed": true,
+          "score": 20,
+          "detail": "提及术后护理相关: 防晒, 补水, 恢复",
+          "evidence": []
+        }
+      ]
+    },
+    {
+      "file_path": "D:\\trae-bz\\TraeProjects\\2264\\data\\samples\\西城店_张美丽_20240612_160046_undealt.wav",
+      "file_name": "西城店_张美丽_20240612_160046_undealt.wav",
+      "store": "西城店",
+      "consultant": "张美丽",
+      "record_date": "20240612",
+      "record_time": "160046",
+      "deal_status": "undealt",
+      "duration_seconds": 92,
+      "category": "light",
+      "total_score": 55,
+      "ban_word_hits": [
+        "保证"
+      ],
+      "interruption_count": 3,
+      "price_validity_clear": false,
+      "preop_mentioned": false,
+      "postop_mentioned": true,
+      "issues": [
+        "禁用词: 保证",
+        "价格优惠未说明有效期",
+        "未充分提及术前检查"
+      ],
+      "check_results": [
+        {
+          "rule_id": "ban_words",
+          "rule_name": "禁用词检测",
+          "passed": false,
+          "score": 5,
+          "detail": "检测到 1 个禁用词: 保证",
+          "evidence": [
+            "...有10年以上经验的，保证安全。\n顾客：那术后..."
+          ]
+        },
+        {
+          "rule_id": "interruption",
+          "rule_name": "打断顾客次数",
+          "passed": true,
+          "score": 20,
+          "detail": "打断 3 次，在合理范围内",
+          "evidence": []
+        },
+        {
+          "rule_id": "price_validity",
+          "rule_name": "价格优惠有效期",
+          "passed": false,
+          "score": 5,
+          "detail": "提及价格优惠但未说明有效期",
+          "evidence": []
+        },
+        {
+          "rule_id": "preop_check",
+          "rule_name": "术前检查提及",
+          "passed": false,
+          "score": 5,
+          "detail": "未充分提及术前检查/评估",
+          "evidence": []
+        },
+        {
+          "rule_id": "postop_care",
+          "rule_name": "术后护理提及",
+          "passed": true,
+          "score": 20,
+          "detail": "提及术后护理相关: 忌口, 恢复, 冰敷, 热敷",
+          "evidence": []
+        }
+      ]
+    },
+    {
+      "file_path": "D:\\trae-bz\\TraeProjects\\2264\\data\\samples\\西城店_张美丽_20240618_113258_dealt.wav",
+      "file_name": "西城店_张美丽_20240618_113258_dealt.wav",
+      "store": "西城店",
+      "consultant": "张美丽",
+      "record_date": "20240618",
+      "record_time": "113258",
+      "deal_status": "dealt",
+      "duration_seconds": 92,
+      "category": "light",
+      "total_score": 85,
+      "ban_word_hits": [
+        "绝对"
+      ],
+      "interruption_count": 1,
+      "price_validity_clear": true,
+      "preop_mentioned": true,
+      "postop_mentioned": true,
+      "issues": [
+        "禁用词: 绝对"
+      ],
+      "check_results": [
+        {
+          "rule_id": "ban_words",
+          "rule_name": "禁用词检测",
+          "passed": false,
+          "score": 5,
+          "detail": "检测到 1 个禁用词: 绝对",
+          "evidence": [
+            "...术安全吗？\n咨询师：绝对安全，我们做了上万例..."
+          ]
+        },
+        {
+          "rule_id": "interruption",
+          "rule_name": "打断顾客次数",
+          "passed": true,
+          "score": 20,
+          "detail": "打断 1 次，在合理范围内",
+          "evidence": []
+        },
+        {
+          "rule_id": "price_validity",
+          "rule_name": "价格优惠有效期",
+          "passed": true,
+          "score": 20,
+          "detail": "已说明价格优惠有效期",
+          "evidence": []
+        },
+        {
+          "rule_id": "preop_check",
+          "rule_name": "术前检查提及",
+          "passed": true,
+          "score": 20,
+          "detail": "提及术前检查相关: 血常规, 凝血",
+          "evidence": []
+        },
+        {
+          "rule_id": "postop_care",
+          "rule_name": "术后护理提及",
+          "passed": true,
+          "score": 20,
+          "detail": "提及术后护理相关: 术后护理, 护理, 忌口, 恢复",
+          "evidence": []
+        }
+      ]
+    },
+    {
+      "file_path": "D:\\trae-bz\\TraeProjects\\2264\\data\\samples\\西城店_张美丽_20240620_135340_dealt.wav",
+      "file_name": "西城店_张美丽_20240620_135340_dealt.wav",
+      "store": "西城店",
+      "consultant": "张美丽",
+      "record_date": "20240620",
+      "record_time": "135340",
+      "deal_status": "dealt",
+      "duration_seconds": 508,
+      "category": "light",
+      "total_score": 55,
+      "ban_word_hits": [
+        "绝对",
+        "无任何副作用"
+      ],
+      "interruption_count": 2,
+      "price_validity_clear": true,
+      "preop_mentioned": false,
+      "postop_mentioned": true,
+      "issues": [
+        "禁用词: 绝对, 无任何副作用",
+        "未充分提及术前检查"
+      ],
+      "check_results": [
+        {
+          "rule_id": "ban_words",
+          "rule_name": "禁用词检测",
+          "passed": false,
+          "score": 0,
+          "detail": "检测到 2 个禁用词: 绝对, 无任何副作用",
+          "evidence": [
+            "...很受欢迎，[打断]，绝对安全，无任何副作用。...",
+            "...[打断]，绝对安全，无任何副作用。现在活动价很划算，..."
+          ]
+        },
+        {
+          "rule_id": "interruption",
+          "rule_name": "打断顾客次数",
+          "passed": true,
+          "score": 20,
+          "detail": "打断 2 次，在合理范围内",
+          "evidence": []
+        },
+        {
+          "rule_id": "price_validity",
+          "rule_name": "价格优惠有效期",
+          "passed": true,
+          "score": 20,
+          "detail": "已说明价格优惠有效期",
+          "evidence": []
+        },
+        {
+          "rule_id": "preop_check",
+          "rule_name": "术前检查提及",
+          "passed": false,
+          "score": 5,
+          "detail": "未充分提及术前检查/评估",
+          "evidence": []
+        },
+        {
+          "rule_id": "postop_care",
+          "rule_name": "术后护理提及",
+          "passed": true,
+          "score": 20,
+          "detail": "提及术后护理相关: 防晒, 补水, 恢复",
+          "evidence": []
+        }
+      ]
+    },
+    {
+      "file_path": "D:\\trae-bz\\TraeProjects\\2264\\data\\samples\\西城店_张美丽_20240620_140718_undealt.wav",
+      "file_name": "西城店_张美丽_20240620_140718_undealt.wav",
+      "store": "西城店",
+      "consultant": "张美丽",
+      "record_date": "20240620",
+      "record_time": "140718",
+      "deal_status": "undealt",
+      "duration_seconds": 86,
+      "category": "light",
+      "total_score": 85,
+      "ban_word_hits": [],
+      "interruption_count": 3,
+      "price_validity_clear": true,
+      "preop_mentioned": true,
+      "postop_mentioned": false,
+      "issues": [
+        "未充分提及术后护理"
+      ],
+      "check_results": [
+        {
+          "rule_id": "ban_words",
+          "rule_name": "禁用词检测",
+          "passed": true,
+          "score": 20,
+          "detail": "未检测到禁用词",
+          "evidence": []
+        },
+        {
+          "rule_id": "interruption",
+          "rule_name": "打断顾客次数",
+          "passed": true,
+          "score": 20,
+          "detail": "打断 3 次，在合理范围内",
+          "evidence": []
+        },
+        {
+          "rule_id": "price_validity",
+          "rule_name": "价格优惠有效期",
+          "passed": true,
+          "score": 20,
+          "detail": "已说明价格优惠有效期",
+          "evidence": []
+        },
+        {
+          "rule_id": "preop_check",
+          "rule_name": "术前检查提及",
+          "passed": true,
+          "score": 20,
+          "detail": "提及术前检查相关: 术前检查",
+          "evidence": []
+        },
+        {
+          "rule_id": "postop_care",
+          "rule_name": "术后护理提及",
+          "passed": false,
+          "score": 5,
+          "detail": "未充分提及术后护理/注意事项",
+          "evidence": []
+        }
+      ]
+    },
+    {
+      "file_path": "D:\\trae-bz\\TraeProjects\\2264\\data\\samples\\西城店_赵雅婷_20240615_113449_dealt.wav",
+      "file_name": "西城店_赵雅婷_20240615_113449_dealt.wav",
+      "store": "西城店",
+      "consultant": "赵雅婷",
+      "record_date": "20240615",
+      "record_time": "113449",
+      "deal_status": "dealt",
+      "duration_seconds": 86,
+      "category": "light",
+      "total_score": 85,
+      "ban_word_hits": [],
+      "interruption_count": 3,
+      "price_validity_clear": true,
+      "preop_mentioned": true,
+      "postop_mentioned": false,
+      "issues": [
+        "未充分提及术后护理"
+      ],
+      "check_results": [
+        {
+          "rule_id": "ban_words",
+          "rule_name": "禁用词检测",
+          "passed": true,
+          "score": 20,
+          "detail": "未检测到禁用词",
+          "evidence": []
+        },
+        {
+          "rule_id": "interruption",
+          "rule_name": "打断顾客次数",
+          "passed": true,
+          "score": 20,
+          "detail": "打断 3 次，在合理范围内",
+          "evidence": []
+        },
+        {
+          "rule_id": "price_validity",
+          "rule_name": "价格优惠有效期",
+          "passed": true,
+          "score": 20,
+          "detail": "已说明价格优惠有效期",
+          "evidence": []
+        },
+        {
+          "rule_id": "preop_check",
+          "rule_name": "术前检查提及",
+          "passed": true,
+          "score": 20,
+          "detail": "提及术前检查相关: 术前检查",
+          "evidence": []
+        },
+        {
+          "rule_id": "postop_care",
+          "rule_name": "术后护理提及",
+          "passed": false,
+          "score": 5,
+          "detail": "未充分提及术后护理/注意事项",
+          "evidence": []
+        }
+      ]
+    },
+    {
+      "file_path": "D:\\trae-bz\\TraeProjects\\2264\\data\\samples\\西城店_赵雅婷_20240615_131503_dealt.wav",
+      "file_name": "西城店_赵雅婷_20240615_131503_dealt.wav",
+      "store": "西城店",
+      "consultant": "赵雅婷",
+      "record_date": "20240615",
+      "record_time": "131503",
+      "deal_status": "dealt",
+      "duration_seconds": 85,
+      "category": "light",
+      "total_score": 30,
+      "ban_word_hits": [
+        "绝对",
+        "一针见效",
+        "无任何副作用"
+      ],
+      "interruption_count": 2,
+      "price_validity_clear": true,
+      "preop_mentioned": false,
+      "postop_mentioned": false,
+      "issues": [
+        "禁用词: 绝对, 一针见效, 无任何副作用",
+        "未充分提及术前检查",
+        "未充分提及术后护理"
+      ],
+      "check_results": [
+        {
+          "rule_id": "ban_words",
+          "rule_name": "禁用词检测",
+          "passed": false,
+          "score": 0,
+          "detail": "检测到 3 个禁用词: 绝对, 一针见效, 无任何副作用",
+          "evidence": [
+            "...成分，无任何副作用，绝对安全。\n顾客：那需要...",
+            "...业的，效果立竿见影，一针见效。\n顾客：真的吗？能...",
+            "...人体本身就有的成分，无任何副作用，绝对安全。\n顾客：..."
+          ]
+        },
+        {
+          "rule_id": "interruption",
+          "rule_name": "打断顾客次数",
+          "passed": true,
+          "score": 20,
+          "detail": "打断 2 次，在合理范围内",
+          "evidence": []
+        },
+        {
+          "rule_id": "price_validity",
+          "rule_name": "价格优惠有效期",
+          "passed": true,
+          "score": 20,
+          "detail": "已说明价格优惠有效期",
+          "evidence": []
+        },
+        {
+          "rule_id": "preop_check",
+          "rule_name": "术前检查提及",
+          "passed": false,
+          "score": 5,
+          "detail": "未充分提及术前检查/评估",
+          "evidence": []
+        },
+        {
+          "rule_id": "postop_care",
+          "rule_name": "术后护理提及",
+          "passed": false,
+          "score": 5,
+          "detail": "未充分提及术后护理/注意事项",
+          "evidence": []
+        }
+      ]
+    },
+    {
+      "file_path": "D:\\trae-bz\\TraeProjects\\2264\\data\\samples\\西城店_赵雅婷_20240619_143101_dealt.wav",
+      "file_name": "西城店_赵雅婷_20240619_143101_dealt.wav",
+      "store": "西城店",
+      "consultant": "赵雅婷",
+      "record_date": "20240619",
+      "record_time": "143101",
+      "deal_status": "dealt",
+      "duration_seconds": 92,
+      "category": "light",
+      "total_score": 85,
+      "ban_word_hits": [
+        "绝对"
+      ],
+      "interruption_count": 1,
+      "price_validity_clear": true,
+      "preop_mentioned": true,
+      "postop_mentioned": true,
+      "issues": [
+        "禁用词: 绝对"
+      ],
+      "check_results": [
+        {
+          "rule_id": "ban_words",
+          "rule_name": "禁用词检测",
+          "passed": false,
+          "score": 5,
+          "detail": "检测到 1 个禁用词: 绝对",
+          "evidence": [
+            "...术安全吗？\n咨询师：绝对安全，我们做了上万例..."
+          ]
+        },
+        {
+          "rule_id": "interruption",
+          "rule_name": "打断顾客次数",
+          "passed": true,
+          "score": 20,
+          "detail": "打断 1 次，在合理范围内",
+          "evidence": []
+        },
+        {
+          "rule_id": "price_validity",
+          "rule_name": "价格优惠有效期",
+          "passed": true,
+          "score": 20,
+          "detail": "已说明价格优惠有效期",
+          "evidence": []
+        },
+        {
+          "rule_id": "preop_check",
+          "rule_name": "术前检查提及",
+          "passed": true,
+          "score": 20,
+          "detail": "提及术前检查相关: 血常规, 凝血",
+          "evidence": []
+        },
+        {
+          "rule_id": "postop_care",
+          "rule_name": "术后护理提及",
+          "passed": true,
+          "score": 20,
+          "detail": "提及术后护理相关: 术后护理, 护理, 忌口, 恢复",
+          "evidence": []
+        }
+      ]
+    },
+    {
+      "file_path": "D:\\trae-bz\\TraeProjects\\2264\\data\\samples\\通州店_孙晓雯_20240610_163936_dealt.wav",
+      "file_name": "通州店_孙晓雯_20240610_163936_dealt.wav",
+      "store": "通州店",
+      "consultant": "孙晓雯",
+      "record_date": "20240610",
+      "record_time": "163936",
+      "deal_status": "dealt",
+      "duration_seconds": 92,
+      "category": "light",
+      "total_score": 85,
+      "ban_word_hits": [
+        "绝对"
+      ],
+      "interruption_count": 1,
+      "price_validity_clear": true,
+      "preop_mentioned": true,
+      "postop_mentioned": true,
+      "issues": [
+        "禁用词: 绝对"
+      ],
+      "check_results": [
+        {
+          "rule_id": "ban_words",
+          "rule_name": "禁用词检测",
+          "passed": false,
+          "score": 5,
+          "detail": "检测到 1 个禁用词: 绝对",
+          "evidence": [
+            "...术安全吗？\n咨询师：绝对安全，我们做了上万例..."
+          ]
+        },
+        {
+          "rule_id": "interruption",
+          "rule_name": "打断顾客次数",
+          "passed": true,
+          "score": 20,
+          "detail": "打断 1 次，在合理范围内",
+          "evidence": []
+        },
+        {
+          "rule_id": "price_validity",
+          "rule_name": "价格优惠有效期",
+          "passed": true,
+          "score": 20,
+          "detail": "已说明价格优惠有效期",
+          "evidence": []
+        },
+        {
+          "rule_id": "preop_check",
+          "rule_name": "术前检查提及",
+          "passed": true,
+          "score": 20,
+          "detail": "提及术前检查相关: 血常规, 凝血",
+          "evidence": []
+        },
+        {
+          "rule_id": "postop_care",
+          "rule_name": "术后护理提及",
+          "passed": true,
+          "score": 20,
+          "detail": "提及术后护理相关: 术后护理, 护理, 忌口, 恢复",
+          "evidence": []
+        }
+      ]
+    },
+    {
+      "file_path": "D:\\trae-bz\\TraeProjects\\2264\\data\\samples\\通州店_孙晓雯_20240613_132508_undealt.wav",
+      "file_name": "通州店_孙晓雯_20240613_132508_undealt.wav",
+      "store": "通州店",
+      "consultant": "孙晓雯",
+      "record_date": "20240613",
+      "record_time": "132508",
+      "deal_status": "undealt",
+      "duration_seconds": 92,
+      "category": "light",
+      "total_score": 85,
+      "ban_word_hits": [
+        "绝对"
+      ],
+      "interruption_count": 1,
+      "price_validity_clear": true,
+      "preop_mentioned": true,
+      "postop_mentioned": true,
+      "issues": [
+        "禁用词: 绝对"
+      ],
+      "check_results": [
+        {
+          "rule_id": "ban_words",
+          "rule_name": "禁用词检测",
+          "passed": false,
+          "score": 5,
+          "detail": "检测到 1 个禁用词: 绝对",
+          "evidence": [
+            "...术安全吗？\n咨询师：绝对安全，我们做了上万例..."
+          ]
+        },
+        {
+          "rule_id": "interruption",
+          "rule_name": "打断顾客次数",
+          "passed": true,
+          "score": 20,
+          "detail": "打断 1 次，在合理范围内",
+          "evidence": []
+        },
+        {
+          "rule_id": "price_validity",
+          "rule_name": "价格优惠有效期",
+          "passed": true,
+          "score": 20,
+          "detail": "已说明价格优惠有效期",
+          "evidence": []
+        },
+        {
+          "rule_id": "preop_check",
+          "rule_name": "术前检查提及",
+          "passed": true,
+          "score": 20,
+          "detail": "提及术前检查相关: 血常规, 凝血",
+          "evidence": []
+        },
+        {
+          "rule_id": "postop_care",
+          "rule_name": "术后护理提及",
+          "passed": true,
+          "score": 20,
+          "detail": "提及术后护理相关: 术后护理, 护理, 忌口, 恢复",
+          "evidence": []
+        }
+      ]
+    },
+    {
+      "file_path": "D:\\trae-bz\\TraeProjects\\2264\\data\\samples\\通州店_孙晓雯_20240614_124245_undealt.wav",
+      "file_name": "通州店_孙晓雯_20240614_124245_undealt.wav",
+      "store": "通州店",
+      "consultant": "孙晓雯",
+      "record_date": "20240614",
+      "record_time": "124245",
+      "deal_status": "undealt",
+      "duration_seconds": 85,
+      "category": "light",
+      "total_score": 30,
+      "ban_word_hits": [
+        "绝对",
+        "一针见效",
+        "无任何副作用"
+      ],
+      "interruption_count": 2,
+      "price_validity_clear": true,
+      "preop_mentioned": false,
+      "postop_mentioned": false,
+      "issues": [
+        "禁用词: 绝对, 一针见效, 无任何副作用",
+        "未充分提及术前检查",
+        "未充分提及术后护理"
+      ],
+      "check_results": [
+        {
+          "rule_id": "ban_words",
+          "rule_name": "禁用词检测",
+          "passed": false,
+          "score": 0,
+          "detail": "检测到 3 个禁用词: 绝对, 一针见效, 无任何副作用",
+          "evidence": [
+            "...成分，无任何副作用，绝对安全。\n顾客：那需要...",
+            "...业的，效果立竿见影，一针见效。\n顾客：真的吗？能...",
+            "...人体本身就有的成分，无任何副作用，绝对安全。\n顾客：..."
+          ]
+        },
+        {
+          "rule_id": "interruption",
+          "rule_name": "打断顾客次数",
+          "passed": true,
+          "score": 20,
+          "detail": "打断 2 次，在合理范围内",
+          "evidence": []
+        },
+        {
+          "rule_id": "price_validity",
+          "rule_name": "价格优惠有效期",
+          "passed": true,
+          "score": 20,
+          "detail": "已说明价格优惠有效期",
+          "evidence": []
+        },
+        {
+          "rule_id": "preop_check",
+          "rule_name": "术前检查提及",
+          "passed": false,
+          "score": 5,
+          "detail": "未充分提及术前检查/评估",
+          "evidence": []
+        },
+        {
+          "rule_id": "postop_care",
+          "rule_name": "术后护理提及",
+          "passed": false,
+          "score": 5,
+          "detail": "未充分提及术后护理/注意事项",
+          "evidence": []
+        }
+      ]
+    },
+    {
+      "file_path": "D:\\trae-bz\\TraeProjects\\2264\\data\\samples\\通州店_孙晓雯_20240617_145948_dealt.wav",
+      "file_name": "通州店_孙晓雯_20240617_145948_dealt.wav",
+      "store": "通州店",
+      "consultant": "孙晓雯",
+      "record_date": "20240617",
+      "record_time": "145948",
+      "deal_status": "dealt",
+      "duration_seconds": 846,
+      "category": "light",
+      "total_score": 55,
+      "ban_word_hits": [
+        "保证"
+      ],
+      "interruption_count": 0,
+      "price_validity_clear": true,
+      "preop_mentioned": false,
+      "postop_mentioned": false,
+      "issues": [
+        "禁用词: 保证",
+        "未充分提及术前检查",
+        "未充分提及术后护理"
+      ],
+      "check_results": [
+        {
+          "rule_id": "ban_words",
+          "rule_name": "禁用词检测",
+          "passed": false,
+          "score": 5,
+          "detail": "检测到 1 个禁用词: 保证",
+          "evidence": [
+            "...填充项目我们很专业，保证效果持久。现在有优惠..."
+          ]
+        },
+        {
+          "rule_id": "interruption",
+          "rule_name": "打断顾客次数",
+          "passed": true,
+          "score": 20,
+          "detail": "打断 0 次，在合理范围内",
+          "evidence": []
+        },
+        {
+          "rule_id": "price_validity",
+          "rule_name": "价格优惠有效期",
+          "passed": true,
+          "score": 20,
+          "detail": "已说明价格优惠有效期",
+          "evidence": []
+        },
+        {
+          "rule_id": "preop_check",
+          "rule_name": "术前检查提及",
+          "passed": false,
+          "score": 5,
+          "detail": "未充分提及术前检查/评估",
+          "evidence": []
+        },
+        {
+          "rule_id": "postop_care",
+          "rule_name": "术后护理提及",
+          "passed": false,
+          "score": 5,
+          "detail": "未充分提及术后护理/注意事项",
+          "evidence": []
+        }
+      ]
+    },
+    {
+      "file_path": "D:\\trae-bz\\TraeProjects\\2264\\data\\samples\\通州店_孙晓雯_20240620_183633_undealt.wav",
+      "file_name": "通州店_孙晓雯_20240620_183633_undealt.wav",
+      "store": "通州店",
+      "consultant": "孙晓雯",
+      "record_date": "20240620",
+      "record_time": "183633",
+      "deal_status": "undealt",
+      "duration_seconds": 86,
+      "category": "light",
+      "total_score": 85,
+      "ban_word_hits": [],
+      "interruption_count": 3,
+      "price_validity_clear": true,
+      "preop_mentioned": true,
+      "postop_mentioned": false,
+      "issues": [
+        "未充分提及术后护理"
+      ],
+      "check_results": [
+        {
+          "rule_id": "ban_words",
+          "rule_name": "禁用词检测",
+          "passed": true,
+          "score": 20,
+          "detail": "未检测到禁用词",
+          "evidence": []
+        },
+        {
+          "rule_id": "interruption",
+          "rule_name": "打断顾客次数",
+          "passed": true,
+          "score": 20,
+          "detail": "打断 3 次，在合理范围内",
+          "evidence": []
+        },
+        {
+          "rule_id": "price_validity",
+          "rule_name": "价格优惠有效期",
+          "passed": true,
+          "score": 20,
+          "detail": "已说明价格优惠有效期",
+          "evidence": []
+        },
+        {
+          "rule_id": "preop_check",
+          "rule_name": "术前检查提及",
+          "passed": true,
+          "score": 20,
+          "detail": "提及术前检查相关: 术前检查",
+          "evidence": []
+        },
+        {
+          "rule_id": "postop_care",
+          "rule_name": "术后护理提及",
+          "passed": false,
+          "score": 5,
+          "detail": "未充分提及术后护理/注意事项",
+          "evidence": []
+        }
+      ]
+    },
+    {
+      "file_path": "D:\\trae-bz\\TraeProjects\\2264\\data\\samples\\通州店_李媛媛_20240611_180443_dealt.wav",
+      "file_name": "通州店_李媛媛_20240611_180443_dealt.wav",
+      "store": "通州店",
+      "consultant": "李媛媛",
+      "record_date": "20240611",
+      "record_time": "180443",
+      "deal_status": "dealt",
+      "duration_seconds": 92,
+      "category": "light",
+      "total_score": 55,
+      "ban_word_hits": [
+        "保证"
+      ],
+      "interruption_count": 3,
+      "price_validity_clear": false,
+      "preop_mentioned": false,
+      "postop_mentioned": true,
+      "issues": [
+        "禁用词: 保证",
+        "价格优惠未说明有效期",
+        "未充分提及术前检查"
+      ],
+      "check_results": [
+        {
+          "rule_id": "ban_words",
+          "rule_name": "禁用词检测",
+          "passed": false,
+          "score": 5,
+          "detail": "检测到 1 个禁用词: 保证",
+          "evidence": [
+            "...有10年以上经验的，保证安全。\n顾客：那术后..."
+          ]
+        },
+        {
+          "rule_id": "interruption",
+          "rule_name": "打断顾客次数",
+          "passed": true,
+          "score": 20,
+          "detail": "打断 3 次，在合理范围内",
+          "evidence": []
+        },
+        {
+          "rule_id": "price_validity",
+          "rule_name": "价格优惠有效期",
+          "passed": false,
+          "score": 5,
+          "detail": "提及价格优惠但未说明有效期",
+          "evidence": []
+        },
+        {
+          "rule_id": "preop_check",
+          "rule_name": "术前检查提及",
+          "passed": false,
+          "score": 5,
+          "detail": "未充分提及术前检查/评估",
+          "evidence": []
+        },
+        {
+          "rule_id": "postop_care",
+          "rule_name": "术后护理提及",
+          "passed": true,
+          "score": 20,
+          "detail": "提及术后护理相关: 忌口, 恢复, 冰敷, 热敷",
+          "evidence": []
+        }
+      ]
+    },
+    {
+      "file_path": "D:\\trae-bz\\TraeProjects\\2264\\data\\samples\\通州店_李媛媛_20240616_105636_dealt.wav",
+      "file_name": "通州店_李媛媛_20240616_105636_dealt.wav",
+      "store": "通州店",
+      "consultant": "李媛媛",
+      "record_date": "20240616",
+      "record_time": "105636",
+      "deal_status": "dealt",
+      "duration_seconds": 700,
+      "category": "light",
+      "total_score": 55,
+      "ban_word_hits": [
+        "保证"
+      ],
+      "interruption_count": 2,
+      "price_validity_clear": true,
+      "preop_mentioned": false,
+      "postop_mentioned": false,
+      "issues": [
+        "禁用词: 保证",
+        "未充分提及术前检查",
+        "未充分提及术后护理"
+      ],
+      "check_results": [
+        {
+          "rule_id": "ban_words",
+          "rule_name": "禁用词检测",
+          "passed": false,
+          "score": 5,
+          "detail": "检测到 1 个禁用词: 保证",
+          "evidence": [
+            "...填充项目我们很专业，保证效果持久。现在有优惠..."
+          ]
+        },
+        {
+          "rule_id": "interruption",
+          "rule_name": "打断顾客次数",
+          "passed": true,
+          "score": 20,
+          "detail": "打断 2 次，在合理范围内",
+          "evidence": []
+        },
+        {
+          "rule_id": "price_validity",
+          "rule_name": "价格优惠有效期",
+          "passed": true,
+          "score": 20,
+          "detail": "已说明价格优惠有效期",
+          "evidence": []
+        },
+        {
+          "rule_id": "preop_check",
+          "rule_name": "术前检查提及",
+          "passed": false,
+          "score": 5,
+          "detail": "未充分提及术前检查/评估",
+          "evidence": []
+        },
+        {
+          "rule_id": "postop_care",
+          "rule_name": "术后护理提及",
+          "passed": false,
+          "score": 5,
+          "detail": "未充分提及术后护理/注意事项",
+          "evidence": []
+        }
+      ]
+    },
+    {
+      "file_path": "D:\\trae-bz\\TraeProjects\\2264\\data\\samples\\通州店_李媛媛_20240619_180239_dealt.wav",
+      "file_name": "通州店_李媛媛_20240619_180239_dealt.wav",
+      "store": "通州店",
+      "consultant": "李媛媛",
+      "record_date": "20240619",
+      "record_time": "180239",
+      "deal_status": "dealt",
+      "duration_seconds": 85,
+      "category": "light",
+      "total_score": 30,
+      "ban_word_hits": [
+        "绝对",
+        "一针见效",
+        "无任何副作用"
+      ],
+      "interruption_count": 2,
+      "price_validity_clear": true,
+      "preop_mentioned": false,
+      "postop_mentioned": false,
+      "issues": [
+        "禁用词: 绝对, 一针见效, 无任何副作用",
+        "未充分提及术前检查",
+        "未充分提及术后护理"
+      ],
+      "check_results": [
+        {
+          "rule_id": "ban_words",
+          "rule_name": "禁用词检测",
+          "passed": false,
+          "score": 0,
+          "detail": "检测到 3 个禁用词: 绝对, 一针见效, 无任何副作用",
+          "evidence": [
+            "...成分，无任何副作用，绝对安全。\n顾客：那需要...",
+            "...业的，效果立竿见影，一针见效。\n顾客：真的吗？能...",
+            "...人体本身就有的成分，无任何副作用，绝对安全。\n顾客：..."
+          ]
+        },
+        {
+          "rule_id": "interruption",
+          "rule_name": "打断顾客次数",
+          "passed": true,
+          "score": 20,
+          "detail": "打断 2 次，在合理范围内",
+          "evidence": []
+        },
+        {
+          "rule_id": "price_validity",
+          "rule_name": "价格优惠有效期",
+          "passed": true,
+          "score": 20,
+          "detail": "已说明价格优惠有效期",
+          "evidence": []
+        },
+        {
+          "rule_id": "preop_check",
+          "rule_name": "术前检查提及",
+          "passed": false,
+          "score": 5,
+          "detail": "未充分提及术前检查/评估",
+          "evidence": []
+        },
+        {
+          "rule_id": "postop_care",
+          "rule_name": "术后护理提及",
+          "passed": false,
+          "score": 5,
+          "detail": "未充分提及术后护理/注意事项",
+          "evidence": []
+        }
+      ]
+    }
+  ]
+}

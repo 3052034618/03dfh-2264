@@ -1,16 +1,17 @@
 import os
 import sys
 from datetime import datetime
+from collections import defaultdict
 from colorama import init, Fore, Style, Back
 from tabulate import tabulate
 
 from config import (
     SAMPLES_DIR, RULE_CATEGORIES, DEAL_STATUS,
-    LOW_SCORE_THRESHOLD, BASE_DIR
+    LOW_SCORE_THRESHOLD, BASE_DIR, EXPORTS_DIR
 )
 from importer import RecordingImporter
 from batch_processor import BatchProcessor
-from analyzer import ResultAnalyzer, RecordManager, ExcelExporter, BatchComparator
+from analyzer import ResultAnalyzer, RecordManager, ExcelExporter, BatchComparator, WeeklyAnalyzer
 from qa_engine import QARuleEngine
 
 init(autoreset=True)
@@ -24,6 +25,7 @@ class QACLI:
         self.record_manager = RecordManager()
         self.exporter = ExcelExporter()
         self.comparator = BatchComparator(self.analyzer)
+        self.weekly_analyzer = WeeklyAnalyzer(self.record_manager, self.analyzer)
 
         self.current_dir = SAMPLES_DIR
         self.transcript_dir = None
@@ -48,10 +50,12 @@ class QACLI:
         print(f"\n{Fore.GREEN}[1] 导入录音{Style.RESET_ALL}    指定文件夹，解析门店和咨询师")
         print(f"{Fore.GREEN}[2] 规则选择{Style.RESET_ALL}    轻医美/手术类/皮肤类，成交筛选")
         print(f"{Fore.GREEN}[3] 开始质检{Style.RESET_ALL}    批处理，实时显示进度")
-        print(f"{Fore.GREEN}[4] 异常清单{Style.RESET_ALL}    低分录音、问题明细")
+        print(f"{Fore.GREEN}[4] 异常清单{Style.RESET_ALL}    低分录音、问题明细（分页浏览）")
         print(f"{Fore.GREEN}[5] 门店汇总{Style.RESET_ALL}    各门店得分、Top10问题")
         print(f"{Fore.GREEN}[6] 结果导出{Style.RESET_ALL}    导出表格给主管复核")
         print(f"{Fore.GREEN}[7] 历史记录{Style.RESET_ALL}    查看历史批次，对比分析")
+        print(f"{Fore.GREEN}[8] 周会模式{Style.RESET_ALL}    按周汇总趋势，导出周会包")
+        print(f"{Fore.GREEN}[9] 咨询师下钻{Style.RESET_ALL}  选咨询师看走势和复听样本")
         print(f"{Fore.RED}[0] 退出{Style.RESET_ALL}")
 
     def print_status_bar(self):
@@ -216,7 +220,7 @@ class QACLI:
         ws1.title = "总览"
         ws1["A1"] = "转写稿缺失清单"
         ws1["A1"].font = Font(bold=True, size=14)
-        ws1.merge_cells("A1:C1")
+        ws1.merge_cells("A1:D1")
 
         rows = [
             ["录音文件总数", missing_info["total_wav"]],
@@ -229,39 +233,40 @@ class QACLI:
             ws1.cell(row=i, column=1, value=key)
             ws1.cell(row=i, column=2, value=val)
 
-        ws2 = wb.create_sheet("缺少转写的录音")
-        ws2.cell(row=1, column=1, value="序号").font = Font(bold=True)
-        ws2.cell(row=1, column=2, value="文件名").font = Font(bold=True)
-        ws2.cell(row=1, column=3, value="完整路径").font = Font(bold=True)
+        ws2 = wb.create_sheet("缺失明细")
+        headers = ["序号", "文件名", "完整路径", "类型"]
+        for col, h in enumerate(headers, 1):
+            ws2.cell(row=1, column=col, value=h).font = Font(bold=True)
 
-        for i, item in enumerate(missing_info["missing_txt"], 2):
-            ws2.cell(row=i, column=1, value=i - 1)
-            ws2.cell(row=i, column=2, value=item["filename"])
-            ws2.cell(row=i, column=3, value=item["full_path"])
+        row_idx = 2
+        for item in missing_info["missing_txt"]:
+            ws2.cell(row=row_idx, column=1, value=row_idx - 1)
+            ws2.cell(row=row_idx, column=2, value=item["filename"])
+            ws2.cell(row=row_idx, column=3, value=item["full_path"])
+            ws2.cell(row=row_idx, column=4, value="缺txt")
+            row_idx += 1
+
+        for item in missing_info["orphan_txt"]:
+            ws2.cell(row=row_idx, column=1, value=row_idx - 1)
+            ws2.cell(row=row_idx, column=2, value=item["filename"])
+            ws2.cell(row=row_idx, column=3, value=item["full_path"])
+            cell = ws2.cell(row=row_idx, column=4, value="多出的txt")
+            cell.font = Font(color="FF0000")
+            row_idx += 1
 
         ws2.column_dimensions["B"].width = 40
         ws2.column_dimensions["C"].width = 60
+        ws2.column_dimensions["D"].width = 12
 
-        if missing_info["orphan_txt"]:
-            ws3 = wb.create_sheet("孤立转写稿")
-            ws3.cell(row=1, column=1, value="序号").font = Font(bold=True)
-            ws3.cell(row=1, column=2, value="文件名").font = Font(bold=True)
-            ws3.cell(row=1, column=3, value="完整路径").font = Font(bold=True)
-
-            for i, item in enumerate(missing_info["orphan_txt"], 2):
-                ws3.cell(row=i, column=1, value=i - 1)
-                ws3.cell(row=i, column=2, value=item["filename"])
-                ws3.cell(row=i, column=3, value=item["full_path"])
-
-            ws3.column_dimensions["B"].width = 40
-            ws3.column_dimensions["C"].width = 60
-
+        os.makedirs(EXPORTS_DIR, exist_ok=True)
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         filename = f"转写缺失清单_{timestamp}.xlsx"
         filepath = os.path.join(EXPORTS_DIR, filename)
         wb.save(filepath)
 
-        print(f"\n{Fore.GREEN}✓ 已导出缺失清单: {filepath}{Style.RESET_ALL}")
+        print(f"\n{Fore.GREEN}✓ 已导出缺失清单{Style.RESET_ALL}")
+        print(f"  {Fore.CYAN}{filepath}{Style.RESET_ALL}")
+        print(f"  缺txt录音: {len(missing_info['missing_txt'])} 个 | 多出txt: {len(missing_info['orphan_txt'])} 个")
         print(f"  请将此文件发给数据同事补充转写")
 
     # ===== 操作2: 规则选择 =====
@@ -863,13 +868,25 @@ class QACLI:
 
         print(tabulate(issue_table, headers=["排名", "问题类型", a['name'], b['name'], "变化"], tablefmt="simple"))
 
-        print(f"\n{Style.BRIGHT}👤 咨询师对比（按平均分升序，前10）:{Style.RESET_ALL}\n")
+        print(f"\n{Style.BRIGHT}👤 咨询师对比（高风险排前，前10）:{Style.RESET_ALL}\n")
 
         cons_comparison = result["consultant_comparison"][:10]
         cons_table = []
         for cc in cons_comparison:
             avg_diff_str = self._format_diff_num(cc["avg_diff"], good='+') if cc["avg_diff"] is not None else "-"
             low_diff_str = self._format_diff_num(cc["low_diff"], good='-') if cc["low_diff"] is not None else "-"
+
+            issues_a = set(i for i, _ in cc.get("top_issues_a", []))
+            issues_b = set(i for i, _ in cc.get("top_issues_b", []))
+            new_issues = issues_b - issues_a
+            gone_issues = issues_a - issues_b
+            issue_change_parts = []
+            if new_issues:
+                issue_change_parts.append(f"+{','.join(list(new_issues)[:2])}")
+            if gone_issues:
+                issue_change_parts.append(f"-{','.join(list(gone_issues)[:2])}")
+            issue_change_str = " ".join(issue_change_parts) if issue_change_parts else "—"
+
             cons_table.append([
                 cc["store"],
                 cc["consultant"],
@@ -879,14 +896,15 @@ class QACLI:
                 cc["low_a"],
                 cc["low_b"],
                 low_diff_str,
+                issue_change_str,
             ])
 
         print(tabulate(
             cons_table,
             headers=["门店", "咨询师", f"{a['name']}(分)", f"{b['name']}(分)", "分变化",
-                     f"{a['name']}(低分)", f"{b['name']}(低分)", "低分变化"],
+                     f"{a['name']}(低分)", f"{b['name']}(低分)", "低分变化", "问题变化"],
             tablefmt="simple",
-            maxcolwidths=[None, None, None, None, None, None, None, None]
+            maxcolwidths=[None, None, None, None, None, None, None, None, 25]
         ))
 
         print(f"\n{Style.BRIGHT}操作选项:{Style.RESET_ALL}")
@@ -921,6 +939,244 @@ class QACLI:
         else:
             return "0"
 
+    # ===== 操作8: 周会模式 =====
+    def action_weekly(self):
+        self.clear_screen()
+        self.print_header()
+        print(f"\n{Fore.YELLOW}{Style.BRIGHT}【 周会模式 】{Style.RESET_ALL}")
+        print(f"  选定日期范围后按周自动汇总，识别风险门店和退步咨询师\n")
+
+        date_from = self.get_input("开始日期 (YYYY-MM-DD)", "2024-01-01")
+        date_to = self.get_input("结束日期 (YYYY-MM-DD，留空到今天)", "")
+
+        print(f"\n{Fore.CYAN}正在加载历史批次并分析...{Style.RESET_ALL}")
+
+        result = self.weekly_analyzer.analyze_weekly(date_from, date_to)
+        batches_info = result["batches"]
+
+        if not batches_info:
+            print(f"\n{Fore.YELLOW}该日期范围内没有找到批次记录{Style.RESET_ALL}")
+            self.pause()
+            return
+
+        self.clear_screen()
+        self.print_header()
+        print(f"\n{Fore.YELLOW}{Style.BRIGHT}【 周会模式 - 复盘分析 】{Style.RESET_ALL}")
+        print(f"  日期范围: {date_from} ~ {date_to or '今天'}")
+        print(f"  涉及批次: {len(batches_info)} 个\n")
+
+        print(f"{Style.BRIGHT}📅 批次概览:{Style.RESET_ALL}\n")
+        table = [[b["name"], b["date"], b["total"], b["avg"]] for b in batches_info]
+        print(tabulate(table, headers=["批次名称", "日期", "录音数", "均分"], tablefmt="simple"))
+
+        weeks = result["weeks"]
+        if weeks:
+            print(f"\n{Style.BRIGHT}📊 按周趋势:{Style.RESET_ALL}\n")
+            week_table = []
+            for w in weeks:
+                stores_str = "  ".join([f"{s}:{v}" for s, v in list(w["store_avgs"].items())[:3]])
+                week_table.append([w["week"], w["batch_count"], w["total_recordings"],
+                                   w["avg_score"], w["low_count"], stores_str])
+            print(tabulate(week_table, headers=["周", "批次数", "录音数", "均分", "低分", "门店均分"], tablefmt="simple"))
+
+        risk_stores = result["risk_stores"]
+        if risk_stores:
+            print(f"\n{Fore.RED}{Style.BRIGHT}⚠ 重点风险门店:{Style.RESET_ALL}\n")
+            for rs in risk_stores[:5]:
+                reasons = "; ".join(rs["reasons"])
+                print(f"  {Fore.RED}• {rs['store']}{Style.RESET_ALL}  均分:{rs['avg_score']}  趋势:{rs['trend']:+.1f}")
+                print(f"    原因: {reasons}")
+                if rs["top_issues"]:
+                    issues = "; ".join([f"{i}({c})" for i, c in rs["top_issues"]])
+                    print(f"    主要问题: {Fore.LIGHTBLACK_EX}{issues}{Style.RESET_ALL}")
+        else:
+            print(f"\n{Fore.GREEN}✓ 无重点风险门店{Style.RESET_ALL}")
+
+        declining = result["declining_consultants"]
+        if declining:
+            print(f"\n{Fore.RED}{Style.BRIGHT}📉 退步咨询师:{Style.RESET_ALL}\n")
+            for dc in declining[:5]:
+                print(f"  {Fore.YELLOW}• {dc['store']} - {dc['consultant']}{Style.RESET_ALL}"
+                      f"  最新:{dc['latest_score']}分  趋势:{dc['trend']:+.1f}  低分:{dc['low_count']}个")
+                if dc["top_issues"]:
+                    issues = "; ".join([f"{i}({c})" for i, c in dc["top_issues"]])
+                    print(f"    主要问题: {Fore.LIGHTBLACK_EX}{issues}{Style.RESET_ALL}")
+        else:
+            print(f"\n{Fore.GREEN}✓ 无退步咨询师{Style.RESET_ALL}")
+
+        recurring = result["recurring_issues"]
+        if recurring:
+            print(f"\n{Fore.YELLOW}{Style.BRIGHT}🔄 反复出现的问题:{Style.RESET_ALL}\n")
+            table = [[i + 1, ri["issue"], ri["frequency"], ri["total_count"], ri["avg_per_batch"]]
+                     for i, ri in enumerate(recurring)]
+            print(tabulate(table, headers=["#", "问题类型", "出现批次", "总次数", "批次均次"], tablefmt="simple"))
+        else:
+            print(f"\n{Fore.GREEN}✓ 无反复出现的问题{Style.RESET_ALL}")
+
+        print(f"\n{Style.BRIGHT}操作选项:{Style.RESET_ALL}")
+        print(f"  [1] 导出周会包（Excel含全部工作表）")
+        print(f"  [0] 返回")
+
+        choice = self.get_input("\n请选择操作", "0")
+        if choice == "1" and len(result.get("batch_objects", [])) >= 2:
+            batch_objs = result["batch_objects"]
+            try:
+                filepath = self.weekly_analyzer.export_weekly_package(
+                    result, self.exporter, batch_objs[0], batch_objs[-1]
+                )
+                print(f"\n{Fore.GREEN}{Style.BRIGHT}✓ 周会包导出成功！{Style.RESET_ALL}")
+                print(f"  文件路径: {Fore.CYAN}{filepath}{Style.RESET_ALL}")
+                print(f"  包含: 对比总览、门店对比、问题对比、咨询师对比、周趋势、风险门店、退步咨询师、反复问题")
+            except Exception as e:
+                print(f"\n{Fore.RED}导出失败: {e}{Style.RESET_ALL}")
+        elif choice == "1":
+            print(f"\n{Fore.YELLOW}至少需要2个批次才能导出周会包{Style.RESET_ALL}")
+
+        self.pause()
+
+    # ===== 操作9: 咨询师下钻 =====
+    def action_consultant_drill(self):
+        self.clear_screen()
+        self.print_header()
+        print(f"\n{Fore.YELLOW}{Style.BRIGHT}【 咨询师下钻 】{Style.RESET_ALL}")
+        print(f"  选择咨询师后查看跨批次走势、低分样本和问题变化\n")
+
+        all_consultants = self.record_manager.get_all_consultants()
+        all_stores = self.record_manager.get_all_stores()
+
+        if not all_consultants:
+            print(f"{Fore.YELLOW}暂无历史记录{Style.RESET_ALL}")
+            self.pause()
+            return
+
+        print(f"{Style.BRIGHT}可用门店:{Style.RESET_ALL} {', '.join(all_stores)}")
+        store = self.get_input("\n请输入门店名称", all_stores[0] if all_stores else "")
+
+        print(f"\n{Style.BRIGHT}可用咨询师:{Style.RESET_ALL} {', '.join(all_consultants[:8])}")
+        consultant = self.get_input("请输入咨询师姓名", all_consultants[0] if all_consultants else "")
+
+        if not store or not consultant:
+            print(f"\n{Fore.YELLOW}请输入门店和咨询师{Style.RESET_ALL}")
+            self.pause()
+            return
+
+        print(f"\n{Fore.CYAN}正在加载 {store} - {consultant} 的历史数据...{Style.RESET_ALL}")
+
+        all_records = self.record_manager.list_records()
+        batches = []
+        for rec in all_records:
+            data = self.record_manager.load_batch(rec["batch_id"])
+            if not data:
+                continue
+            has_consultant = any(
+                r.get("store") == store and r.get("consultant") == consultant
+                for r in data.get("results", [])
+            )
+            if has_consultant:
+                from models import Recording, RecordingQAResult, CheckItemResult, BatchRecord
+                batch = BatchRecord(
+                    batch_id=data["batch_id"],
+                    batch_name=data["batch_name"],
+                    start_time=datetime.fromisoformat(data["start_time"]),
+                    end_time=datetime.fromisoformat(data["end_time"]) if data.get("end_time") else None,
+                    total_count=data["total_count"],
+                    passed_count=data["passed_count"],
+                    failed_count=data["failed_count"],
+                    rule_category=data["rule_category"],
+                    deal_filter=data["deal_filter"],
+                    source_dir=data["source_dir"]
+                )
+                for r_data in data["results"]:
+                    rec_obj = Recording(
+                        file_path=r_data["file_path"],
+                        file_name=r_data["file_name"],
+                        store=r_data["store"],
+                        consultant=r_data["consultant"],
+                        record_date=r_data["record_date"],
+                        record_time=r_data["record_time"],
+                        deal_status=r_data["deal_status"],
+                        duration_seconds=r_data["duration_seconds"],
+                        transcript="",
+                        category=r_data["category"]
+                    )
+                    result_obj = RecordingQAResult(
+                        recording=rec_obj,
+                        total_score=r_data["total_score"],
+                        ban_word_hits=r_data["ban_word_hits"],
+                        interruption_count=r_data["interruption_count"],
+                        price_validity_clear=r_data["price_validity_clear"],
+                        preop_mentioned=r_data["preop_mentioned"],
+                        postop_mentioned=r_data["postop_mentioned"],
+                        issues=r_data["issues"],
+                        check_results=[
+                            CheckItemResult(
+                                rule_id=cr["rule_id"], rule_name=cr["rule_name"],
+                                passed=cr["passed"], score=cr["score"],
+                                detail=cr["detail"], evidence=cr.get("evidence", [])
+                            )
+                            for cr in r_data["check_results"]
+                        ]
+                    )
+                    batch.results.append(result_obj)
+                batches.append(batch)
+
+        if not batches:
+            print(f"\n{Fore.YELLOW}未找到 {store} - {consultant} 的历史数据{Style.RESET_ALL}")
+            self.pause()
+            return
+
+        trend = self.comparator.get_consultant_trend(batches, store, consultant)
+
+        self.clear_screen()
+        self.print_header()
+        print(f"\n{Fore.YELLOW}{Style.BRIGHT}【 咨询师下钻 】{Style.RESET_ALL}")
+        print(f"  {store} - {consultant}  跨 {trend['batch_count']} 个批次\n")
+
+        print(f"{Style.BRIGHT}📈 分数走势:{Style.RESET_ALL}\n")
+        trend_table = []
+        for t in trend["trend"]:
+            score_bar_len = int(t["avg_score"] / 5)
+            score_bar = "█" * score_bar_len
+            issues_str = "; ".join([f"{i}({c})" for i, c in t["top_issues"][:2]])
+            trend_table.append([
+                t["batch_name"],
+                t["avg_score"],
+                score_bar,
+                t["low_count"],
+                f"{t['total_count']}条",
+                issues_str,
+            ])
+
+        print(tabulate(trend_table, headers=["批次", "均分", "分布", "低分", "录音", "主要问题"], tablefmt="simple"))
+
+        print(f"\n{Style.BRIGHT}🎧 低分录音样本（可直接复制路径复听）:{Style.RESET_ALL}\n")
+        for t in trend["trend"]:
+            if t["low_recordings"]:
+                print(f"  {Style.BRIGHT}[{t['batch_name']}]{Style.RESET_ALL}")
+                for lr in t["low_recordings"][:5]:
+                    score_color = Fore.RED if lr["score"] < 40 else Fore.YELLOW
+                    print(f"    {score_color}{lr['score']}分{Style.RESET_ALL}  {lr['file_name']}")
+                    print(f"    {Fore.CYAN}{lr['file_path']}{Style.RESET_ALL}")
+                    if lr["issues"]:
+                        print(f"    {Fore.LIGHTBLACK_EX}问题: {'; '.join(lr['issues'][:2])}{Style.RESET_ALL}")
+                print()
+
+        print(f"\n{Style.BRIGHT}🔄 高频问题变化:{Style.RESET_ALL}\n")
+        all_issues_timeline = defaultdict(list)
+        for t in trend["trend"]:
+            for issue, count in t["top_issues"]:
+                all_issues_timeline[issue].append(count)
+
+        issue_table = []
+        for issue, counts in sorted(all_issues_timeline.items(), key=lambda x: sum(x[1]), reverse=True):
+            trend_str = " → ".join(str(c) for c in counts)
+            direction = "↑" if counts[-1] > counts[0] else ("↓" if counts[-1] < counts[0] else "—")
+            issue_table.append([issue, trend_str, direction])
+
+        print(tabulate(issue_table, headers=["问题类型", "各批次次数", "趋势"], tablefmt="simple"))
+
+        self.pause()
+
     # ===== 主循环 =====
     def run(self):
         while True:
@@ -945,6 +1201,10 @@ class QACLI:
                 self.action_export()
             elif choice == "7":
                 self.action_history()
+            elif choice == "8":
+                self.action_weekly()
+            elif choice == "9":
+                self.action_consultant_drill()
             elif choice == "0":
                 print(f"\n{Fore.CYAN}感谢使用，再见！{Style.RESET_ALL}\n")
                 break

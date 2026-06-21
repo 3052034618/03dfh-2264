@@ -4,7 +4,7 @@ from collections import defaultdict
 from typing import List, Dict
 from datetime import datetime
 from models import BatchRecord, RecordingQAResult, StoreSummary
-from config import EXPORTS_DIR, RECORDS_DIR, RULE_CATEGORIES, DEAL_STATUS
+from config import EXPORTS_DIR, RECORDS_DIR, RULE_CATEGORIES, DEAL_STATUS, LOW_SCORE_THRESHOLD
 from openpyxl import Workbook
 from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
 
@@ -836,7 +836,7 @@ class BatchComparator:
                 "top_issues_b": cb["top_issues"] if cb else [],
             })
 
-        consultant_comparison.sort(key=lambda x: x["avg_b"] if x["avg_b"] is not None else (x["avg_a"] or 0))
+        consultant_comparison.sort(key=lambda x: self._consultant_risk_score(x), reverse=True)
 
         return {
             "batch_a": {
@@ -864,3 +864,432 @@ class BatchComparator:
             "consultant_comparison": consultant_comparison,
             "low_diff": low_b - low_a,
         }
+
+    def _consultant_risk_score(self, cc: dict) -> float:
+        risk = 0.0
+        avg_diff = cc.get("avg_diff")
+        low_diff = cc.get("low_diff")
+        if avg_diff is not None:
+            risk += max(0, -avg_diff) * 2
+        if low_diff is not None:
+            risk += max(0, low_diff) * 3
+        issues_a = set(i for i, _ in cc.get("top_issues_a", []))
+        issues_b = set(i for i, _ in cc.get("top_issues_b", []))
+        new_issues = issues_b - issues_a
+        risk += len(new_issues) * 2
+        if avg_diff is None:
+            risk -= 5
+        if low_diff is None:
+            risk -= 3
+        return risk
+
+    def get_consultant_trend(self, batches: list, store: str, consultant: str) -> dict:
+        trend_data = []
+        for batch in batches:
+            cons_summaries = self.analyzer.get_consultant_summaries(batch)
+            matched = [c for c in cons_summaries
+                       if c["store"] == store and c["consultant"] == consultant]
+            if matched:
+                c = matched[0]
+                low_recordings = []
+                for r in batch.results:
+                    if r.recording.store == store and r.recording.consultant == consultant:
+                        if r.is_low_score:
+                            low_recordings.append({
+                                "score": r.total_score,
+                                "file_path": r.recording.file_path,
+                                "file_name": r.recording.file_name,
+                                "issues": r.issues,
+                            })
+                trend_data.append({
+                    "batch_name": batch.batch_name,
+                    "batch_id": batch.batch_id,
+                    "start_time": batch.start_time.isoformat() if batch.start_time else "",
+                    "avg_score": c["avg_score"],
+                    "low_count": c["low_count"],
+                    "total_count": c["total_count"],
+                    "top_issues": c["top_issues"],
+                    "low_recordings": low_recordings,
+                })
+        return {
+            "store": store,
+            "consultant": consultant,
+            "batch_count": len(trend_data),
+            "trend": trend_data,
+        }
+
+
+class WeeklyAnalyzer:
+    def __init__(self, record_manager: RecordManager, analyzer: ResultAnalyzer):
+        self.record_manager = record_manager
+        self.analyzer = analyzer
+        self.low_score_threshold = LOW_SCORE_THRESHOLD
+
+    def _load_batches_in_range(self, date_from: str, date_to: str) -> list:
+        records = self.record_manager.filter_records(
+            date_from=date_from, date_to=date_to
+        )
+        batches = []
+        for rec in records:
+            data = self.record_manager.load_batch(rec["batch_id"])
+            if not data:
+                continue
+            batch = self._data_to_batch(data)
+            if batch:
+                batches.append(batch)
+        return batches
+
+    def _data_to_batch(self, data: dict) -> object:
+        from models import Recording, RecordingQAResult, CheckItemResult, BatchRecord
+        batch = BatchRecord(
+            batch_id=data["batch_id"],
+            batch_name=data["batch_name"],
+            start_time=datetime.fromisoformat(data["start_time"]),
+            end_time=datetime.fromisoformat(data["end_time"]) if data.get("end_time") else None,
+            total_count=data["total_count"],
+            passed_count=data["passed_count"],
+            failed_count=data["failed_count"],
+            rule_category=data["rule_category"],
+            deal_filter=data["deal_filter"],
+            source_dir=data["source_dir"]
+        )
+        for r_data in data["results"]:
+            rec = Recording(
+                file_path=r_data["file_path"],
+                file_name=r_data["file_name"],
+                store=r_data["store"],
+                consultant=r_data["consultant"],
+                record_date=r_data["record_date"],
+                record_time=r_data["record_time"],
+                deal_status=r_data["deal_status"],
+                duration_seconds=r_data["duration_seconds"],
+                transcript="",
+                category=r_data["category"]
+            )
+            result = RecordingQAResult(
+                recording=rec,
+                total_score=r_data["total_score"],
+                ban_word_hits=r_data["ban_word_hits"],
+                interruption_count=r_data["interruption_count"],
+                price_validity_clear=r_data["price_validity_clear"],
+                preop_mentioned=r_data["preop_mentioned"],
+                postop_mentioned=r_data["postop_mentioned"],
+                issues=r_data["issues"],
+                check_results=[
+                    CheckItemResult(
+                        rule_id=cr["rule_id"],
+                        rule_name=cr["rule_name"],
+                        passed=cr["passed"],
+                        score=cr["score"],
+                        detail=cr["detail"],
+                        evidence=cr.get("evidence", [])
+                    )
+                    for cr in r_data["check_results"]
+                ]
+            )
+            batch.results.append(result)
+        return batch
+
+    def analyze_weekly(self, date_from: str, date_to: str) -> dict:
+        batches = self._load_batches_in_range(date_from, date_to)
+        if not batches:
+            return {"batches": [], "weeks": [], "risk_stores": [],
+                    "declining_consultants": [], "recurring_issues": []}
+
+        weeks = self._group_by_week(batches)
+        risk_stores = self._find_risk_stores(batches)
+        declining_consultants = self._find_declining_consultants(batches)
+        recurring_issues = self._find_recurring_issues(batches)
+
+        return {
+            "batches": [{"name": b.batch_name, "id": b.batch_id,
+                          "date": b.start_time.strftime("%Y-%m-%d"),
+                          "total": b.total_count, "avg": round(
+                              sum(r.total_score for r in b.results) / b.total_count, 1
+                          ) if b.total_count else 0}
+                         for b in batches],
+            "weeks": weeks,
+            "risk_stores": risk_stores,
+            "declining_consultants": declining_consultants,
+            "recurring_issues": recurring_issues,
+            "batch_objects": batches,
+        }
+
+    def _group_by_week(self, batches: list) -> list:
+        from datetime import timedelta
+        weeks = defaultdict(list)
+        for b in batches:
+            week_start = b.start_time - timedelta(days=b.start_time.weekday())
+            week_key = week_start.strftime("%Y-W%W")
+            weeks[week_key].append(b)
+
+        result = []
+        for week_key, week_batches in sorted(weeks.items()):
+            all_results = []
+            for b in week_batches:
+                all_results.extend(b.results)
+            if not all_results:
+                continue
+            total = len(all_results)
+            avg_score = sum(r.total_score for r in all_results) / total
+            low_count = sum(1 for r in all_results if r.is_low_score)
+
+            store_scores = defaultdict(list)
+            for r in all_results:
+                store_scores[r.recording.store].append(r.total_score)
+            store_avgs = {s: round(sum(v) / len(v), 1) for s, v in store_scores.items()}
+
+            result.append({
+                "week": week_key,
+                "batch_count": len(week_batches),
+                "total_recordings": total,
+                "avg_score": round(avg_score, 1),
+                "low_count": low_count,
+                "store_avgs": store_avgs,
+            })
+        return result
+
+    def _find_risk_stores(self, batches: list) -> list:
+        if len(batches) < 2:
+            first = batches[0] if batches else None
+            if not first:
+                return []
+            stores = self.analyzer.get_store_summaries(first)
+            return [{"store": s.store_name, "avg_score": s.avg_score,
+                      "reason": f"均分仅{s.avg_score}分"}
+                     for s in stores if s.avg_score < self.low_score_threshold]
+
+        all_store_data = defaultdict(list)
+        for b in batches:
+            for s in self.analyzer.get_store_summaries(b):
+                all_store_data[s.store_name].append(s)
+
+        risk = []
+        for store, summaries in all_store_data.items():
+            if len(summaries) < 2:
+                continue
+            sorted_s = sorted(summaries, key=lambda x: x.avg_score)
+            worst = sorted_s[0]
+            recent = summaries[-1]
+            trend = recent.avg_score - sorted_s[0].avg_score
+
+            reasons = []
+            if worst.avg_score < self.low_score_threshold:
+                reasons.append(f"均分低至{worst.avg_score}分")
+            if trend < -5:
+                reasons.append(f"趋势下降{abs(round(trend, 1))}分")
+            if worst.issue_count > 5:
+                reasons.append(f"问题数{worst.issue_count}个")
+
+            if reasons:
+                risk.append({
+                    "store": store,
+                    "avg_score": recent.avg_score,
+                    "worst_score": worst.avg_score,
+                    "trend": round(trend, 1),
+                    "reasons": reasons,
+                    "top_issues": worst.top_issues[:3],
+                })
+
+        risk.sort(key=lambda x: x["avg_score"])
+        return risk[:10]
+
+    def _find_declining_consultants(self, batches: list) -> list:
+        if len(batches) < 2:
+            return []
+
+        all_cons_data = defaultdict(list)
+        for b in batches:
+            for c in self.analyzer.get_consultant_summaries(b):
+                key = f"{c['store']}|{c['consultant']}"
+                all_cons_data[key].append(c)
+
+        declining = []
+        for key, summaries in all_cons_data.items():
+            if len(summaries) < 2:
+                continue
+            store, consultant = key.split("|", 1)
+            sorted_s = sorted(summaries, key=lambda x: x["avg_score"])
+            latest = summaries[-1]
+            trend = latest["avg_score"] - sorted_s[0]["avg_score"]
+
+            if trend < -5 or latest["low_count"] > 2:
+                declining.append({
+                    "store": store,
+                    "consultant": consultant,
+                    "latest_score": latest["avg_score"],
+                    "trend": round(trend, 1),
+                    "low_count": latest["low_count"],
+                    "top_issues": latest["top_issues"][:3],
+                })
+
+        declining.sort(key=lambda x: x["trend"])
+        return declining[:10]
+
+    def _find_recurring_issues(self, batches: list) -> list:
+        issue_by_batch = []
+        for b in batches:
+            top = dict(self.analyzer.get_top_issues(b, top_n=20))
+            issue_by_batch.append(top)
+
+        if not issue_by_batch:
+            return []
+
+        issue_counts = defaultdict(int)
+        issue_total = defaultdict(int)
+        for batch_issues in issue_by_batch:
+            for issue, count in batch_issues.items():
+                issue_counts[issue] += 1
+                issue_total[issue] += count
+
+        batch_count = len(batches)
+        recurring = []
+        for issue, appear_count in issue_counts.items():
+            if appear_count >= max(2, batch_count * 0.5):
+                recurring.append({
+                    "issue": issue,
+                    "appear_in_batches": appear_count,
+                    "total_count": issue_total[issue],
+                    "avg_per_batch": round(issue_total[issue] / batch_count, 1),
+                    "frequency": f"{appear_count}/{batch_count}批次",
+                })
+
+        recurring.sort(key=lambda x: x["total_count"], reverse=True)
+        return recurring[:10]
+
+    def export_weekly_package(self, weekly_result: dict, exporter: ExcelExporter,
+                               batch_a: BatchRecord, batch_b: BatchRecord) -> str:
+        filepath = exporter.export_comparison(batch_a, batch_b, self.analyzer)
+
+        from openpyxl import load_workbook
+        wb = load_workbook(filepath)
+
+        ws_week = wb.create_sheet("周趋势")
+        self._fill_week_trend_sheet(ws_week, weekly_result)
+
+        ws_risk = wb.create_sheet("风险门店")
+        self._fill_risk_stores_sheet(ws_risk, weekly_result)
+
+        ws_decline = wb.create_sheet("退步咨询师")
+        self._fill_declining_consultants_sheet(ws_decline, weekly_result)
+
+        ws_recur = wb.create_sheet("反复问题")
+        self._fill_recurring_issues_sheet(ws_recur, weekly_result)
+
+        wb.save(filepath)
+        return filepath
+
+    def _fill_week_trend_sheet(self, ws, weekly_result):
+        from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
+        header_font = Font(bold=True, color="FFFFFF", size=11)
+        header_fill = PatternFill(start_color="4472C4", end_color="4472C4", fill_type="solid")
+
+        ws.merge_cells("A1:E1")
+        ws["A1"] = "周趋势汇总"
+        ws["A1"].font = Font(bold=True, size=14)
+
+        headers = ["周", "批次数", "录音数", "平均分", "低分数"]
+        for col, h in enumerate(headers, 1):
+            cell = ws.cell(row=2, column=col, value=h)
+            cell.font = header_font
+            cell.fill = header_fill
+
+        for i, week in enumerate(weekly_result.get("weeks", []), 3):
+            ws.cell(row=i, column=1, value=week["week"])
+            ws.cell(row=i, column=2, value=week["batch_count"])
+            ws.cell(row=i, column=3, value=week["total_recordings"])
+            ws.cell(row=i, column=4, value=week["avg_score"])
+            ws.cell(row=i, column=5, value=week["low_count"])
+
+        ws.column_dimensions["A"].width = 15
+        ws.column_dimensions["B"].width = 10
+        ws.column_dimensions["C"].width = 10
+        ws.column_dimensions["D"].width = 10
+        ws.column_dimensions["E"].width = 10
+
+    def _fill_risk_stores_sheet(self, ws, weekly_result):
+        from openpyxl.styles import Font, PatternFill
+        header_font = Font(bold=True, color="FFFFFF", size=11)
+        header_fill = PatternFill(start_color="C00000", end_color="C00000", fill_type="solid")
+
+        ws.merge_cells("A1:E1")
+        ws["A1"] = "重点风险门店"
+        ws["A1"].font = Font(bold=True, size=14, color="C00000")
+
+        headers = ["门店", "最新均分", "最低均分", "趋势", "原因"]
+        for col, h in enumerate(headers, 1):
+            cell = ws.cell(row=2, column=col, value=h)
+            cell.font = header_font
+            cell.fill = header_fill
+
+        for i, rs in enumerate(weekly_result.get("risk_stores", []), 3):
+            ws.cell(row=i, column=1, value=rs["store"])
+            ws.cell(row=i, column=2, value=rs["avg_score"])
+            ws.cell(row=i, column=3, value=rs["worst_score"])
+            ws.cell(row=i, column=4, value=rs["trend"])
+            ws.cell(row=i, column=5, value="; ".join(rs["reasons"]))
+
+        ws.column_dimensions["A"].width = 15
+        ws.column_dimensions["B"].width = 10
+        ws.column_dimensions["C"].width = 10
+        ws.column_dimensions["D"].width = 10
+        ws.column_dimensions["E"].width = 40
+
+    def _fill_declining_consultants_sheet(self, ws, weekly_result):
+        from openpyxl.styles import Font, PatternFill
+        header_font = Font(bold=True, color="FFFFFF", size=11)
+        header_fill = PatternFill(start_color="C00000", end_color="C00000", fill_type="solid")
+
+        ws.merge_cells("A1:F1")
+        ws["A1"] = "退步咨询师"
+        ws["A1"].font = Font(bold=True, size=14, color="C00000")
+
+        headers = ["门店", "咨询师", "最新均分", "趋势", "低分数", "主要问题"]
+        for col, h in enumerate(headers, 1):
+            cell = ws.cell(row=2, column=col, value=h)
+            cell.font = header_font
+            cell.fill = header_fill
+
+        for i, dc in enumerate(weekly_result.get("declining_consultants", []), 3):
+            ws.cell(row=i, column=1, value=dc["store"])
+            ws.cell(row=i, column=2, value=dc["consultant"])
+            ws.cell(row=i, column=3, value=dc["latest_score"])
+            ws.cell(row=i, column=4, value=dc["trend"])
+            ws.cell(row=i, column=5, value=dc["low_count"])
+            issues_str = "; ".join([f"{iss}({cnt})" for iss, cnt in dc["top_issues"]])
+            ws.cell(row=i, column=6, value=issues_str)
+
+        ws.column_dimensions["A"].width = 12
+        ws.column_dimensions["B"].width = 12
+        ws.column_dimensions["C"].width = 10
+        ws.column_dimensions["D"].width = 10
+        ws.column_dimensions["E"].width = 10
+        ws.column_dimensions["F"].width = 40
+
+    def _fill_recurring_issues_sheet(self, ws, weekly_result):
+        from openpyxl.styles import Font, PatternFill
+        header_font = Font(bold=True, color="FFFFFF", size=11)
+        header_fill = PatternFill(start_color="BF8F00", end_color="BF8F00", fill_type="solid")
+
+        ws.merge_cells("A1:E1")
+        ws["A1"] = "反复出现的问题"
+        ws["A1"].font = Font(bold=True, size=14, color="BF8F00")
+
+        headers = ["排名", "问题类型", "出现批次", "总次数", "批次均次"]
+        for col, h in enumerate(headers, 1):
+            cell = ws.cell(row=2, column=col, value=h)
+            cell.font = header_font
+            cell.fill = header_fill
+
+        for i, ri in enumerate(weekly_result.get("recurring_issues", []), 3):
+            ws.cell(row=i, column=1, value=i - 2)
+            ws.cell(row=i, column=2, value=ri["issue"])
+            ws.cell(row=i, column=3, value=ri["frequency"])
+            ws.cell(row=i, column=4, value=ri["total_count"])
+            ws.cell(row=i, column=5, value=ri["avg_per_batch"])
+
+        ws.column_dimensions["A"].width = 8
+        ws.column_dimensions["B"].width = 30
+        ws.column_dimensions["C"].width = 15
+        ws.column_dimensions["D"].width = 10
+        ws.column_dimensions["E"].width = 10
