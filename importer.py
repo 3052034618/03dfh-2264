@@ -222,3 +222,58 @@ class RecordingImporter:
 
     def get_transcript_stats(self) -> dict:
         return self.transcript_stats.copy()
+
+    def check_missing_transcripts(self, wav_dir: str) -> dict:
+        wav_files = set()
+        if os.path.exists(wav_dir):
+            for f in os.listdir(wav_dir):
+                if f.lower().endswith('.wav'):
+                    wav_files.add(f)
+
+        txt_files = set()
+        txt_dirs = []
+        if self.transcript_dir and os.path.exists(self.transcript_dir):
+            txt_dirs.append(self.transcript_dir)
+        txt_dirs.append(wav_dir)
+
+        for td in txt_dirs:
+            if os.path.exists(td):
+                for f in os.listdir(td):
+                    if f.lower().endswith('.txt'):
+                        txt_files.add(f)
+
+        missing_txt = []
+        matched_txt = set()
+        for wav in wav_files:
+            txt_name = os.path.splitext(wav)[0] + ".txt"
+            if txt_name in txt_files:
+                matched_txt.add(txt_name)
+            else:
+                missing_txt.append({
+                    "filename": wav,
+                    "full_path": os.path.join(wav_dir, wav)
+                })
+
+        orphan_txt = []
+        for txt in txt_files:
+            if txt not in matched_txt:
+                wav_name = os.path.splitext(txt)[0] + ".wav"
+                if wav_name not in wav_files:
+                    source_dir = self.transcript_dir if (
+                        self.transcript_dir and os.path.exists(os.path.join(self.transcript_dir, txt))
+                    ) else wav_dir
+                    orphan_txt.append({
+                        "filename": txt,
+                        "full_path": os.path.join(source_dir, txt)
+                    })
+
+        missing_txt.sort(key=lambda x: x["filename"])
+        orphan_txt.sort(key=lambda x: x["filename"])
+
+        return {
+            "total_wav": len(wav_files),
+            "total_txt": len(txt_files),
+            "matched_count": len(matched_txt),
+            "missing_txt": missing_txt,
+            "orphan_txt": orphan_txt,
+        }

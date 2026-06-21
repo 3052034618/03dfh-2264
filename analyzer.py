@@ -45,6 +45,42 @@ class ResultAnalyzer:
         summaries.sort(key=lambda x: x.avg_score)
         return summaries
 
+    def get_consultant_summaries(self, batch: BatchRecord) -> List[dict]:
+        consultant_data = defaultdict(list)
+        for result in batch.results:
+            key = f"{result.recording.store}|{result.recording.consultant}"
+            consultant_data[key].append(result)
+
+        summaries = []
+        for key, results in consultant_data.items():
+            store, consultant = key.split("|", 1)
+            total = len(results)
+            avg_score = sum(r.total_score for r in results) / total if total > 0 else 0
+            low_count = sum(1 for r in results if r.is_low_score)
+            pass_rate = (total - low_count) / total if total > 0 else 0
+            issue_count = sum(len(r.issues) for r in results)
+
+            issue_counts = defaultdict(int)
+            for r in results:
+                for issue in r.issues:
+                    issue_counts[issue] += 1
+
+            top_issues = sorted(issue_counts.items(), key=lambda x: x[1], reverse=True)[:3]
+
+            summaries.append({
+                "store": store,
+                "consultant": consultant,
+                "total_count": total,
+                "avg_score": round(avg_score, 1),
+                "low_count": low_count,
+                "pass_rate": round(pass_rate * 100, 1),
+                "issue_count": issue_count,
+                "top_issues": top_issues
+            })
+
+        summaries.sort(key=lambda x: x["avg_score"])
+        return summaries
+
     def get_top_issues(self, batch: BatchRecord, top_n: int = 10) -> List[tuple]:
         issue_counts = defaultdict(int)
         for result in batch.results:
@@ -151,7 +187,7 @@ class RecordManager:
             ]
         }
 
-    def list_records(self) -> List[dict]:
+    def _list_all_raw(self) -> List[dict]:
         records = []
         for filename in os.listdir(self.records_dir):
             if not filename.endswith(".json"):
@@ -160,6 +196,12 @@ class RecordManager:
             try:
                 with open(filepath, "r", encoding="utf-8") as f:
                     data = json.load(f)
+                stores = set()
+                consultants = set()
+                for r in data.get("results", []):
+                    stores.add(r.get("store", ""))
+                    consultants.add(r.get("consultant", ""))
+
                 records.append({
                     "batch_id": data["batch_id"],
                     "batch_name": data["batch_name"],
@@ -170,6 +212,8 @@ class RecordManager:
                     "failed_count": data["failed_count"],
                     "rule_category": data["rule_category"],
                     "deal_filter": data["deal_filter"],
+                    "stores": list(stores),
+                    "consultants": list(consultants),
                     "filepath": filepath
                 })
             except Exception:
@@ -177,6 +221,52 @@ class RecordManager:
 
         records.sort(key=lambda x: x["start_time"], reverse=True)
         return records
+
+    def list_records(self) -> List[dict]:
+        return self._list_all_raw()
+
+    def filter_records(self, store: str = None, consultant: str = None,
+                       rule_category: str = None, date_from: str = None,
+                       date_to: str = None) -> List[dict]:
+        records = self._list_all_raw()
+        filtered = []
+
+        for rec in records:
+            if store and store not in rec["stores"]:
+                continue
+            if consultant and consultant not in rec["consultants"]:
+                continue
+            if rule_category and rec["rule_category"] != rule_category:
+                continue
+            if date_from:
+                rec_date = rec["start_time"][:10]
+                if rec_date < date_from:
+                    continue
+            if date_to:
+                rec_date = rec["start_time"][:10]
+                if rec_date > date_to:
+                    continue
+            filtered.append(rec)
+
+        return filtered
+
+    def get_all_stores(self) -> List[str]:
+        records = self._list_all_raw()
+        stores = set()
+        for rec in records:
+            for s in rec["stores"]:
+                if s:
+                    stores.add(s)
+        return sorted(list(stores))
+
+    def get_all_consultants(self) -> List[str]:
+        records = self._list_all_raw()
+        consultants = set()
+        for rec in records:
+            for c in rec["consultants"]:
+                if c:
+                    consultants.add(c)
+        return sorted(list(consultants))
 
     def load_batch(self, batch_id: str) -> dict:
         for filename in os.listdir(self.records_dir):
@@ -420,6 +510,9 @@ class ExcelExporter:
         ws3 = wb.create_sheet("问题对比")
         self._fill_compare_issues_sheet(ws3, batch_a, batch_b, analyzer)
 
+        ws4 = wb.create_sheet("咨询师对比")
+        self._fill_compare_consultants_sheet(ws4, batch_a, batch_b, analyzer)
+
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         filename = f"批次对比_{batch_a.batch_name}_vs_{batch_b.batch_name}_{timestamp}.xlsx"
         filepath = os.path.join(self.exports_dir, filename)
@@ -599,6 +692,73 @@ class ExcelExporter:
         else:
             return "0%"
 
+    def _fill_compare_consultants_sheet(self, ws, batch_a, batch_b, analyzer):
+        ws.merge_cells("A1:H1")
+        ws["A1"] = "咨询师对比（按平均分升序）"
+        ws["A1"].font = Font(bold=True, size=14)
+        ws["A1"].alignment = Alignment(horizontal="center")
+
+        cons_a = {f"{c['store']}|{c['consultant']}": c
+                  for c in analyzer.get_consultant_summaries(batch_a)}
+        cons_b = {f"{c['store']}|{c['consultant']}": c
+                  for c in analyzer.get_consultant_summaries(batch_b)}
+        all_cons = sorted(set(list(cons_a.keys()) + list(cons_b.keys())))
+
+        sorted_cons = sorted(
+            all_cons,
+            key=lambda k: cons_b.get(k, {}).get("avg_score", 0)
+            if cons_b.get(k) else cons_a.get(k, {}).get("avg_score", 0)
+        )
+
+        headers = ["排名", "门店", "咨询师", f"{batch_a.batch_name}(均分)",
+                   f"{batch_b.batch_name}(均分)", "分数变化", f"{batch_a.batch_name}(低分)",
+                   f"{batch_b.batch_name}(低分)", "低分变化", "主要问题变化"]
+        for col, header in enumerate(headers, 1):
+            cell = ws.cell(row=2, column=col, value=header)
+            self._set_header_style(cell)
+
+        for row_idx, key in enumerate(sorted_cons, 3):
+            store, consultant = key.split("|", 1)
+            ca = cons_a.get(key)
+            cb = cons_b.get(key)
+
+            avg_a = ca["avg_score"] if ca else 0
+            avg_b = cb["avg_score"] if cb else 0
+            low_a = ca["low_count"] if ca else 0
+            low_b = cb["low_count"] if cb else 0
+            avg_diff = round(avg_b - avg_a, 1) if ca and cb else None
+            low_diff = low_b - low_a if ca and cb else None
+
+            top_a = "; ".join([f"{i}({c})" for i, c in ca["top_issues"][:2]]) if ca else "-"
+            top_b = "; ".join([f"{i}({c})" for i, c in cb["top_issues"][:2]]) if cb else "-"
+            issue_change = f"{top_a} → {top_b}" if ca and cb else (top_b if cb else top_a)
+
+            row_data = [
+                row_idx - 2,
+                store,
+                consultant,
+                avg_a if ca else "-",
+                avg_b if cb else "-",
+                self._format_diff(avg_diff) if avg_diff is not None else "-",
+                low_a if ca else "-",
+                low_b if cb else "-",
+                self._format_diff(low_diff, reverse=True) if low_diff is not None else "-",
+                issue_change,
+            ]
+
+            for col_idx, value in enumerate(row_data, 1):
+                cell = ws.cell(row=row_idx, column=col_idx, value=value)
+                self._set_cell_style(cell)
+                if col_idx in [6, 9] and value not in ["-", ""]:
+                    if "↓" in str(value):
+                        cell.font = Font(color="FF0000", bold=True)
+                    elif "↑" in str(value):
+                        cell.font = Font(color="00B050", bold=True)
+
+        widths = [6, 12, 12, 18, 18, 12, 16, 16, 12, 40]
+        for i, w in enumerate(widths, 1):
+            ws.column_dimensions[chr(64 + i)].width = w
+
 
 class BatchComparator:
     def __init__(self, analyzer: ResultAnalyzer):
@@ -650,6 +810,34 @@ class BatchComparator:
         low_a = len(self.analyzer.get_low_score_list(batch_a))
         low_b = len(self.analyzer.get_low_score_list(batch_b))
 
+        cons_a = {f"{c['store']}|{c['consultant']}": c
+                  for c in self.analyzer.get_consultant_summaries(batch_a)}
+        cons_b = {f"{c['store']}|{c['consultant']}": c
+                  for c in self.analyzer.get_consultant_summaries(batch_b)}
+        all_cons = sorted(set(list(cons_a.keys()) + list(cons_b.keys())))
+
+        consultant_comparison = []
+        for key in all_cons:
+            store, consultant = key.split("|", 1)
+            ca = cons_a.get(key)
+            cb = cons_b.get(key)
+            consultant_comparison.append({
+                "store": store,
+                "consultant": consultant,
+                "avg_a": ca["avg_score"] if ca else None,
+                "avg_b": cb["avg_score"] if cb else None,
+                "avg_diff": round(cb["avg_score"] - ca["avg_score"], 1) if ca and cb else None,
+                "low_a": ca["low_count"] if ca else 0,
+                "low_b": cb["low_count"] if cb else 0,
+                "low_diff": cb["low_count"] - ca["low_count"] if ca and cb else None,
+                "count_a": ca["total_count"] if ca else 0,
+                "count_b": cb["total_count"] if cb else 0,
+                "top_issues_a": ca["top_issues"] if ca else [],
+                "top_issues_b": cb["top_issues"] if cb else [],
+            })
+
+        consultant_comparison.sort(key=lambda x: x["avg_b"] if x["avg_b"] is not None else (x["avg_a"] or 0))
+
         return {
             "batch_a": {
                 "name": batch_a.batch_name,
@@ -673,5 +861,6 @@ class BatchComparator:
             },
             "store_comparison": store_comparison,
             "issue_comparison": issue_comparison,
+            "consultant_comparison": consultant_comparison,
             "low_diff": low_b - low_a,
         }

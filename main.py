@@ -146,6 +146,36 @@ class QACLI:
         if stats['failed'] > 0:
             print(f"  导入失败: {Fore.RED}{stats['failed']} 个{Style.RESET_ALL}")
 
+        missing_info = self.importer.check_missing_transcripts(self.current_dir)
+        missing = missing_info["missing_txt"]
+        orphan = missing_info["orphan_txt"]
+
+        print(f"\n{Style.BRIGHT}转写匹配检查:{Style.RESET_ALL}")
+        print(f"  录音文件: {missing_info['total_wav']} 个")
+        print(f"  转写文件: {missing_info['total_txt']} 个")
+        print(f"  成功匹配: {Fore.GREEN}{missing_info['matched_count']} 个{Style.RESET_ALL}")
+        print(f"  缺少转写: {Fore.YELLOW}{len(missing)} 个录音{Style.RESET_ALL}")
+        if orphan:
+            print(f"  孤立转写: {Fore.LIGHTBLACK_EX}{len(orphan)} 个txt无对应录音{Style.RESET_ALL}")
+
+        if missing:
+            print(f"\n{Style.BRIGHT}📋 缺少转写的录音（前10个）:{Style.RESET_ALL}")
+            for item in missing[:10]:
+                print(f"  {Fore.YELLOW}• {item['filename']}{Style.RESET_ALL}")
+                print(f"    {Fore.LIGHTBLACK_EX}{item['full_path']}{Style.RESET_ALL}")
+            if len(missing) > 10:
+                print(f"  ... 还有 {len(missing) - 10} 个")
+
+        if orphan:
+            print(f"\n{Style.BRIGHT}📋 未匹配的转写稿（前5个）:{Style.RESET_ALL}")
+            for item in orphan[:5]:
+                print(f"  {Fore.LIGHTBLACK_EX}• {item['filename']}{Style.RESET_ALL}")
+
+        if missing or orphan:
+            export_missing = self.get_input("\n导出转写缺失清单给数据同事？(y/n)", "n")
+            if export_missing.lower() == "y":
+                self._export_missing_list(missing_info)
+
         sample_files = files[:8]
         table_data = []
         for fname in sample_files:
@@ -175,6 +205,64 @@ class QACLI:
             print(f"\n  ... 还有 {len(files) - 8} 个文件")
 
         self.pause()
+
+    def _export_missing_list(self, missing_info: dict):
+        from openpyxl import Workbook
+        from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
+
+        wb = Workbook()
+
+        ws1 = wb.active
+        ws1.title = "总览"
+        ws1["A1"] = "转写稿缺失清单"
+        ws1["A1"].font = Font(bold=True, size=14)
+        ws1.merge_cells("A1:C1")
+
+        rows = [
+            ["录音文件总数", missing_info["total_wav"]],
+            ["转写文件总数", missing_info["total_txt"]],
+            ["成功匹配数", missing_info["matched_count"]],
+            ["缺少转写的录音数", len(missing_info["missing_txt"])],
+            ["无对应录音的转写数", len(missing_info["orphan_txt"])],
+        ]
+        for i, (key, val) in enumerate(rows, 3):
+            ws1.cell(row=i, column=1, value=key)
+            ws1.cell(row=i, column=2, value=val)
+
+        ws2 = wb.create_sheet("缺少转写的录音")
+        ws2.cell(row=1, column=1, value="序号").font = Font(bold=True)
+        ws2.cell(row=1, column=2, value="文件名").font = Font(bold=True)
+        ws2.cell(row=1, column=3, value="完整路径").font = Font(bold=True)
+
+        for i, item in enumerate(missing_info["missing_txt"], 2):
+            ws2.cell(row=i, column=1, value=i - 1)
+            ws2.cell(row=i, column=2, value=item["filename"])
+            ws2.cell(row=i, column=3, value=item["full_path"])
+
+        ws2.column_dimensions["B"].width = 40
+        ws2.column_dimensions["C"].width = 60
+
+        if missing_info["orphan_txt"]:
+            ws3 = wb.create_sheet("孤立转写稿")
+            ws3.cell(row=1, column=1, value="序号").font = Font(bold=True)
+            ws3.cell(row=1, column=2, value="文件名").font = Font(bold=True)
+            ws3.cell(row=1, column=3, value="完整路径").font = Font(bold=True)
+
+            for i, item in enumerate(missing_info["orphan_txt"], 2):
+                ws3.cell(row=i, column=1, value=i - 1)
+                ws3.cell(row=i, column=2, value=item["filename"])
+                ws3.cell(row=i, column=3, value=item["full_path"])
+
+            ws3.column_dimensions["B"].width = 40
+            ws3.column_dimensions["C"].width = 60
+
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        filename = f"转写缺失清单_{timestamp}.xlsx"
+        filepath = os.path.join(EXPORTS_DIR, filename)
+        wb.save(filepath)
+
+        print(f"\n{Fore.GREEN}✓ 已导出缺失清单: {filepath}{Style.RESET_ALL}")
+        print(f"  请将此文件发给数据同事补充转写")
 
     # ===== 操作2: 规则选择 =====
     def action_rules(self):
@@ -298,44 +386,58 @@ class QACLI:
         low_scores = self.analyzer.get_low_score_list(self.current_batch)
 
         print(f"{Style.BRIGHT}低分录音（<{LOW_SCORE_THRESHOLD}分）共 {len(low_scores)} 个{Style.RESET_ALL}")
-        print(f"{Fore.LIGHTBLACK_EX}提示: 文件路径可直接复制用于精听{Style.RESET_ALL}\n")
+        print(f"{Fore.LIGHTBLACK_EX}提示: 输入序号查看详情，n=下一页，p=上一页，q=返回{Style.RESET_ALL}\n")
 
         if not low_scores:
             print(f"{Fore.GREEN}太棒了！本次质检没有低分录音{Style.RESET_ALL}")
         else:
-            table_data = []
-            for i, result in enumerate(low_scores[:15], 1):
-                rec = result.recording
-                deal = "已成交" if rec.is_dealt else "未成交"
-                issues_str = "; ".join(result.issues[:2])
-                if len(result.issues) > 2:
-                    issues_str += f" ...(+{len(result.issues) - 2})"
-                source = "真实" if getattr(rec, "transcript_source", "simulated") == "real" else "模拟"
-                table_data.append([
-                    i,
-                    rec.store,
-                    rec.consultant,
-                    deal,
-                    result.total_score,
-                    source,
-                    issues_str,
-                ])
+            PAGE_SIZE = 10
+            total_pages = (len(low_scores) + PAGE_SIZE - 1) // PAGE_SIZE
+            current_page = 0
 
-            print(tabulate(
-                table_data,
-                headers=["#", "门店", "咨询师", "成交", "得分", "转写", "主要问题"],
-                tablefmt="simple"
-            ))
+            while True:
+                self.clear_screen()
+                self.print_header()
+                print(f"\n{Fore.YELLOW}{Style.BRIGHT}【 异常清单 - 低分录音 】{Style.RESET_ALL}")
+                print(f"  共 {len(low_scores)} 条，第 {current_page + 1}/{total_pages} 页\n")
 
-            print(f"\n{Style.BRIGHT}📂 低分录音完整路径（按得分升序）:{Style.RESET_ALL}\n")
-            for i, result in enumerate(low_scores[:15], 1):
-                rec = result.recording
-                score_color = Fore.RED if result.total_score < 40 else Fore.YELLOW
-                print(f"  {i:2d}. [{score_color}{result.total_score}分{Style.RESET_ALL}] {rec.store} - {rec.consultant}")
-                print(f"     {Fore.CYAN}{rec.file_path}{Style.RESET_ALL}")
+                start = current_page * PAGE_SIZE
+                end = min(start + PAGE_SIZE, len(low_scores))
+                page_items = low_scores[start:end]
 
-            if len(low_scores) > 15:
-                print(f"\n  ... 还有 {len(low_scores) - 15} 个低分录音，详见导出表格")
+                for i, result in enumerate(page_items, start + 1):
+                    rec = result.recording
+                    score_color = Fore.RED if result.total_score < 40 else Fore.YELLOW
+                    deal = "✓已成交" if rec.is_dealt else "○未成交"
+                    source = "真实转写" if getattr(rec, "transcript_source", "simulated") == "real" else "模拟转写"
+                    source_color = Fore.GREEN if getattr(rec, "transcript_source", "simulated") == "real" else Fore.LIGHTBLACK_EX
+
+                    print(f"  [{i:2d}] {score_color}{result.total_score:3d}分{Style.RESET_ALL}  "
+                          f"{rec.store} - {rec.consultant}  {deal}  {source_color}{source}{Style.RESET_ALL}")
+                    print(f"       {Fore.CYAN}{rec.file_path}{Style.RESET_ALL}")
+                    if result.issues:
+                        issues_str = "; ".join(result.issues[:2])
+                        if len(result.issues) > 2:
+                            issues_str += f" ...(+{len(result.issues) - 2})"
+                        print(f"       {Fore.LIGHTBLACK_EX}问题: {issues_str}{Style.RESET_ALL}")
+                    print()
+
+                print(f"{Fore.LIGHTBLACK_EX}操作: 序号=查看详情 | n=下一页 | p=上一页 | q=返回{Style.RESET_ALL}")
+                choice = self.get_input("请输入操作", "q")
+
+                if choice.lower() == 'q':
+                    break
+                elif choice.lower() == 'n':
+                    if current_page < total_pages - 1:
+                        current_page += 1
+                elif choice.lower() == 'p':
+                    if current_page > 0:
+                        current_page -= 1
+                elif choice.isdigit():
+                    idx = int(choice)
+                    if 1 <= idx <= len(low_scores):
+                        self._show_detail(low_scores[idx - 1])
+                        input(f"\n{Fore.YELLOW}按回车键继续浏览...{Style.RESET_ALL}")
 
         print(f"\n{Style.BRIGHT}问题类型统计 Top10:{Style.RESET_ALL}\n")
         top_issues = self.analyzer.get_top_issues(self.current_batch, top_n=10)
@@ -345,11 +447,6 @@ class QACLI:
             table_data.append([i, issue, count, f"{pct:.1f}%"])
 
         print(tabulate(table_data, headers=["排名", "问题类型", "出现次数", "占比"], tablefmt="simple"))
-
-        if low_scores:
-            detail = self.get_input("\n输入序号查看详细质检结果，回车返回", "")
-            if detail.isdigit() and 1 <= int(detail) <= len(low_scores):
-                self._show_detail(low_scores[int(detail) - 1])
 
         self.pause()
 
@@ -470,76 +567,162 @@ class QACLI:
 
     # ===== 操作7: 历史记录 =====
     def action_history(self):
-        self.clear_screen()
-        self.print_header()
-        print(f"\n{Fore.YELLOW}{Style.BRIGHT}【 历史记录 】{Style.RESET_ALL}\n")
+        filter_store = None
+        filter_consultant = None
+        filter_category = None
+        filter_date_from = None
+        filter_date_to = None
 
-        records = self.record_manager.list_records()
+        while True:
+            self.clear_screen()
+            self.print_header()
+            print(f"\n{Fore.YELLOW}{Style.BRIGHT}【 历史记录 】{Style.RESET_ALL}\n")
 
-        if not records:
-            print(f"{Fore.LIGHTBLACK_EX}暂无历史记录{Style.RESET_ALL}")
-            self.pause()
-            return
+            all_stores = self.record_manager.get_all_stores()
+            all_cons = self.record_manager.get_all_consultants()
 
-        print(f"共找到 {len(records)} 条历史批次:\n")
+            print(f"{Style.BRIGHT}当前筛选条件:{Style.RESET_ALL}")
+            filter_parts = []
+            if filter_store: filter_parts.append(f"门店={filter_store}")
+            if filter_consultant: filter_parts.append(f"咨询师={filter_consultant}")
+            if filter_category: filter_parts.append(f"规则={RULE_CATEGORIES.get(filter_category, filter_category)}")
+            if filter_date_from: filter_parts.append(f"日期>={filter_date_from}")
+            if filter_date_to: filter_parts.append(f"日期<={filter_date_to}")
 
-        table_data = []
-        for i, rec in enumerate(records[:15], 1):
-            start_time = rec["start_time"][:19].replace("T", " ")
-            cat_name = RULE_CATEGORIES.get(rec["rule_category"], rec["rule_category"])
-            pct = rec["passed_count"] / rec["total_count"] * 100 if rec["total_count"] > 0 else 0
-            table_data.append([
-                i,
-                rec["batch_name"],
-                rec["batch_id"],
-                cat_name,
-                rec["total_count"],
-                f"{pct:.1f}%",
-                start_time
-            ])
-
-        print(tabulate(
-            table_data,
-            headers=["序号", "批次名称", "批次ID", "规则", "总数", "通过率", "开始时间"],
-            tablefmt="simple"
-        ))
-
-        print(f"\n{Style.BRIGHT}操作选项:{Style.RESET_ALL}")
-        print(f"  [1] 加载某个批次查看详情")
-        print(f"  [2] 选择两个批次进行对比")
-        print(f"  [0] 返回主菜单")
-
-        choice = self.get_input("\n请选择操作", "1")
-
-        if choice == "1":
-            idx = self.get_input("请输入批次序号", "1")
-            if idx.isdigit() and 1 <= int(idx) <= len(records):
-                self._load_history(records[int(idx) - 1])
-        elif choice == "2":
-            if len(records) < 2:
-                print(f"\n{Fore.YELLOW}至少需要2个批次才能对比{Style.RESET_ALL}")
-                self.pause()
-                return
-
-            idx1 = self.get_input("请输入第一个批次序号（较旧）", "1")
-            idx2 = self.get_input("请输入第二个批次序号（较新）", "2")
-
-            if idx1.isdigit() and idx2.isdigit() \
-               and 1 <= int(idx1) <= len(records) \
-               and 1 <= int(idx2) <= len(records) \
-               and idx1 != idx2:
-
-                batch_a = self._load_batch_to_memory(records[int(idx1) - 1])
-                batch_b = self._load_batch_to_memory(records[int(idx2) - 1])
-
-                if batch_a and batch_b:
-                    self._show_comparison(batch_a, batch_b)
-                else:
-                    print(f"\n{Fore.RED}批次加载失败{Style.RESET_ALL}")
+            if filter_parts:
+                print(f"  {Fore.CYAN}{' | '.join(filter_parts)}{Style.RESET_ALL}")
             else:
-                print(f"\n{Fore.YELLOW}序号无效{Style.RESET_ALL}")
+                print(f"  {Fore.LIGHTBLACK_EX}(无筛选，显示全部){Style.RESET_ALL}")
 
-        self.pause()
+            records = self.record_manager.filter_records(
+                store=filter_store,
+                consultant=filter_consultant,
+                rule_category=filter_category,
+                date_from=filter_date_from,
+                date_to=filter_date_to
+            )
+
+            print(f"\n命中 {Fore.GREEN}{len(records)}{Style.RESET_ALL} 个批次\n")
+
+            if not records:
+                print(f"{Fore.LIGHTBLACK_EX}没有符合条件的批次{Style.RESET_ALL}")
+            else:
+                table_data = []
+                for i, rec in enumerate(records[:20], 1):
+                    start_time = rec["start_time"][:19].replace("T", " ")
+                    cat_name = RULE_CATEGORIES.get(rec["rule_category"], rec["rule_category"])
+                    pct = rec["passed_count"] / rec["total_count"] * 100 if rec["total_count"] > 0 else 0
+                    table_data.append([
+                        i,
+                        rec["batch_name"],
+                        cat_name,
+                        rec["total_count"],
+                        f"{pct:.1f}%",
+                        start_time[:16]
+                    ])
+
+                print(tabulate(
+                    table_data,
+                    headers=["#", "批次名称", "规则", "总数", "通过率", "开始时间"],
+                    tablefmt="simple"
+                ))
+
+                if len(records) > 20:
+                    print(f"\n  ... 还有 {len(records) - 20} 个批次")
+
+            print(f"\n{Style.BRIGHT}操作选项:{Style.RESET_ALL}")
+            print(f"  [1] 设置筛选 - 门店")
+            print(f"  [2] 设置筛选 - 咨询师")
+            print(f"  [3] 设置筛选 - 规则类型")
+            print(f"  [4] 设置筛选 - 日期范围")
+            print(f"  [5] 清除所有筛选")
+            print(f"  ---")
+            print(f"  [6] 加载某个批次")
+            print(f"  [7] 选择两个批次对比")
+            print(f"  [0] 返回主菜单")
+
+            choice = self.get_input("\n请选择操作", "0")
+
+            if choice == "0":
+                break
+
+            elif choice == "1":
+                if all_stores:
+                    print(f"\n可用门店: {', '.join(all_stores)}")
+                store = self.get_input("请输入门店名称（留空清除）", "")
+                filter_store = store if store else None
+
+            elif choice == "2":
+                if all_cons:
+                    print(f"\n可用咨询师: {', '.join(all_cons[:10])}...")
+                consultant = self.get_input("请输入咨询师姓名（留空清除）", "")
+                filter_consultant = consultant if consultant else None
+
+            elif choice == "3":
+                print(f"\n规则类型:")
+                for i, (key, name) in enumerate(RULE_CATEGORIES.items(), 1):
+                    print(f"  [{i}] {name}")
+                cat_choice = self.get_input("请选择（留空清除）", "")
+                if cat_choice.isdigit():
+                    cats = list(RULE_CATEGORIES.keys())
+                    idx = int(cat_choice) - 1
+                    if 0 <= idx < len(cats):
+                        filter_category = cats[idx]
+                else:
+                    filter_category = None
+
+            elif choice == "4":
+                date_from = self.get_input("开始日期 (YYYY-MM-DD，留空不限)", "")
+                date_to = self.get_input("结束日期 (YYYY-MM-DD，留空不限)", "")
+                filter_date_from = date_from if date_from else None
+                filter_date_to = date_to if date_to else None
+
+            elif choice == "5":
+                filter_store = None
+                filter_consultant = None
+                filter_category = None
+                filter_date_from = None
+                filter_date_to = None
+                print(f"\n{Fore.GREEN}已清除所有筛选{Style.RESET_ALL}")
+
+            elif choice == "6":
+                if not records:
+                    print(f"\n{Fore.YELLOW}没有符合条件的批次{Style.RESET_ALL}")
+                    self.pause()
+                    continue
+                idx = self.get_input("请输入批次序号", "1")
+                if idx.isdigit() and 1 <= int(idx) <= len(records):
+                    self._load_history(records[int(idx) - 1])
+                    self.pause()
+
+            elif choice == "7":
+                if len(records) < 2:
+                    print(f"\n{Fore.YELLOW}至少需要2个批次才能对比{Style.RESET_ALL}")
+                    self.pause()
+                    continue
+
+                idx1 = self.get_input("请输入第一个批次序号（较旧）", "1")
+                idx2 = self.get_input("请输入第二个批次序号（较新）", "2")
+
+                if idx1.isdigit() and idx2.isdigit() \
+                   and 1 <= int(idx1) <= len(records) \
+                   and 1 <= int(idx2) <= len(records) \
+                   and idx1 != idx2:
+
+                    batch_a = self._load_batch_to_memory(records[int(idx1) - 1])
+                    batch_b = self._load_batch_to_memory(records[int(idx2) - 1])
+
+                    if batch_a and batch_b:
+                        self._show_comparison(batch_a, batch_b)
+                    else:
+                        print(f"\n{Fore.RED}批次加载失败{Style.RESET_ALL}")
+                else:
+                    print(f"\n{Fore.YELLOW}序号无效{Style.RESET_ALL}")
+                self.pause()
+
+            else:
+                print(f"\n{Fore.YELLOW}无效选项{Style.RESET_ALL}")
+                self.pause()
 
     def _load_batch_to_memory(self, record_info: dict) -> object:
         from models import Recording, RecordingQAResult, CheckItemResult, BatchRecord
@@ -680,8 +863,34 @@ class QACLI:
 
         print(tabulate(issue_table, headers=["排名", "问题类型", a['name'], b['name'], "变化"], tablefmt="simple"))
 
+        print(f"\n{Style.BRIGHT}👤 咨询师对比（按平均分升序，前10）:{Style.RESET_ALL}\n")
+
+        cons_comparison = result["consultant_comparison"][:10]
+        cons_table = []
+        for cc in cons_comparison:
+            avg_diff_str = self._format_diff_num(cc["avg_diff"], good='+') if cc["avg_diff"] is not None else "-"
+            low_diff_str = self._format_diff_num(cc["low_diff"], good='-') if cc["low_diff"] is not None else "-"
+            cons_table.append([
+                cc["store"],
+                cc["consultant"],
+                cc["avg_a"] if cc["avg_a"] is not None else "-",
+                cc["avg_b"] if cc["avg_b"] is not None else "-",
+                avg_diff_str,
+                cc["low_a"],
+                cc["low_b"],
+                low_diff_str,
+            ])
+
+        print(tabulate(
+            cons_table,
+            headers=["门店", "咨询师", f"{a['name']}(分)", f"{b['name']}(分)", "分变化",
+                     f"{a['name']}(低分)", f"{b['name']}(低分)", "低分变化"],
+            tablefmt="simple",
+            maxcolwidths=[None, None, None, None, None, None, None, None]
+        ))
+
         print(f"\n{Style.BRIGHT}操作选项:{Style.RESET_ALL}")
-        print(f"  [1] 导出对比表到 Excel（用于周会复盘）")
+        print(f"  [1] 导出对比表到 Excel（含咨询师对比页）")
         print(f"  [2] 将较新批次设为当前批次")
         print(f"  [0] 返回")
 
