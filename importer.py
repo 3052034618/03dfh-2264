@@ -1,7 +1,7 @@
 import os
 import re
 import random
-from typing import List
+from typing import List, Optional, Tuple
 from models import Recording
 from config import FILENAME_PATTERN, SAMPLES_DIR
 
@@ -17,6 +17,52 @@ class FilenameParser:
         if not match:
             return {}
         return match.groupdict()
+
+
+class TranscriptLoader:
+    INTERRUPTION_MARKERS = ["（打断）", "【抢话】", "(插话)", "[打断]", "（插话）",
+                            "打断：", "抢话：", "咨询师打断", "咨询师抢话"]
+
+    @classmethod
+    def load_from_file(cls, txt_path: str) -> Tuple[Optional[str], int]:
+        if not os.path.exists(txt_path):
+            return None, 0
+
+        try:
+            with open(txt_path, "r", encoding="utf-8") as f:
+                transcript = f.read().strip()
+        except (UnicodeDecodeError, IOError):
+            try:
+                with open(txt_path, "r", encoding="gbk") as f:
+                    transcript = f.read().strip()
+            except Exception:
+                return None, 0
+
+        if not transcript:
+            return None, 0
+
+        interruption_count = cls.count_interruptions(transcript)
+        return transcript, interruption_count
+
+    @classmethod
+    def count_interruptions(cls, transcript: str) -> int:
+        count = 0
+        for marker in cls.INTERRUPTION_MARKERS:
+            count += transcript.count(marker)
+
+        pattern = r"顾[客客]：[^\n。？！]*?[。？！](?=\s*咨[询师]：)"
+        short_pattern = r"顾[客客]：[^。？！\n]{2,10}[。？！](?=\s*咨[询师]：)"
+        matches = re.findall(short_pattern, transcript)
+        if len(matches) > 3:
+            count += max(0, len(matches) - 2)
+
+        return count
+
+    @classmethod
+    def estimate_duration(cls, transcript: str) -> int:
+        char_count = len(transcript.replace("\n", "").replace(" ", ""))
+        seconds = int(char_count / 3.5)
+        return max(60, seconds)
 
 
 class TranscriptSimulator:
@@ -74,14 +120,43 @@ class RecordingImporter:
     def __init__(self):
         self.parser = FilenameParser()
         self.simulator = TranscriptSimulator()
+        self.loader = TranscriptLoader()
+        self.transcript_dir: Optional[str] = None
+        self.use_simulator_fallback: bool = True
+        self.transcript_stats = {"real": 0, "simulated": 0, "failed": 0}
+
+    def set_transcript_dir(self, directory: Optional[str]):
+        self.transcript_dir = directory
+
+    def set_simulator_fallback(self, enabled: bool):
+        self.use_simulator_fallback = enabled
+
+    def _find_transcript_file(self, wav_filename: str, wav_dir: str) -> Optional[str]:
+        txt_name = os.path.splitext(wav_filename)[0] + ".txt"
+
+        candidates = []
+
+        if self.transcript_dir and os.path.exists(self.transcript_dir):
+            candidates.append(os.path.join(self.transcript_dir, txt_name))
+
+        same_dir_txt = os.path.join(wav_dir, txt_name)
+        candidates.append(same_dir_txt)
+
+        for candidate in candidates:
+            if os.path.exists(candidate):
+                return candidate
+
+        return None
 
     def import_from_directory(self, directory: str, category: str = "light",
                               deal_filter: str = "all") -> List[Recording]:
         recordings = []
+        self.transcript_stats = {"real": 0, "simulated": 0, "failed": 0}
+
         if not os.path.exists(directory):
             return recordings
 
-        for filename in os.listdir(directory):
+        for filename in sorted(os.listdir(directory)):
             if not filename.lower().endswith('.wav'):
                 continue
 
@@ -95,10 +170,33 @@ class RecordingImporter:
                 continue
 
             file_path = os.path.join(directory, filename)
-            seed = hash(filename) % 10000
-            transcript, interruptions, duration = self.simulator.generate_transcript(
-                category, parsed["deal"], seed
-            )
+            transcript = ""
+            interruption_count = 0
+            duration = 0
+            transcript_source = "simulated"
+
+            txt_path = self._find_transcript_file(filename, directory)
+
+            if txt_path:
+                loaded_transcript, loaded_interruptions = self.loader.load_from_file(txt_path)
+                if loaded_transcript:
+                    transcript = loaded_transcript
+                    interruption_count = loaded_interruptions
+                    duration = self.loader.estimate_duration(transcript)
+                    transcript_source = "real"
+                    self.transcript_stats["real"] += 1
+                else:
+                    self.transcript_stats["failed"] += 1
+            elif not self.use_simulator_fallback:
+                self.transcript_stats["failed"] += 1
+                continue
+
+            if transcript_source == "simulated" and self.use_simulator_fallback:
+                seed = hash(filename) % 10000
+                transcript, interruption_count, duration = self.simulator.generate_transcript(
+                    category, parsed["deal"], seed
+                )
+                self.transcript_stats["simulated"] += 1
 
             recording = Recording(
                 file_path=file_path,
@@ -112,6 +210,7 @@ class RecordingImporter:
                 transcript=transcript,
                 category=category
             )
+            recording.transcript_source = transcript_source
             recordings.append(recording)
 
         return recordings
@@ -119,4 +218,7 @@ class RecordingImporter:
     def list_recording_files(self, directory: str) -> List[str]:
         if not os.path.exists(directory):
             return []
-        return [f for f in os.listdir(directory) if f.lower().endswith('.wav')]
+        return sorted([f for f in os.listdir(directory) if f.lower().endswith('.wav')])
+
+    def get_transcript_stats(self) -> dict:
+        return self.transcript_stats.copy()

@@ -10,7 +10,7 @@ from config import (
 )
 from importer import RecordingImporter
 from batch_processor import BatchProcessor
-from analyzer import ResultAnalyzer, RecordManager, ExcelExporter
+from analyzer import ResultAnalyzer, RecordManager, ExcelExporter, BatchComparator
 from qa_engine import QARuleEngine
 
 init(autoreset=True)
@@ -23,8 +23,11 @@ class QACLI:
         self.analyzer = ResultAnalyzer()
         self.record_manager = RecordManager()
         self.exporter = ExcelExporter()
+        self.comparator = BatchComparator(self.analyzer)
 
         self.current_dir = SAMPLES_DIR
+        self.transcript_dir = None
+        self.use_simulator_fallback = True
         self.current_category = "light"
         self.current_deal_filter = "all"
         self.current_batch = None
@@ -59,6 +62,10 @@ class QACLI:
 
         print(f"\n{Fore.CYAN}{'-' * 60}")
         print(f"  当前文件夹: {self.current_dir}")
+        if self.transcript_dir:
+            print(f"  转写文件夹: {Fore.GREEN}{self.transcript_dir}{Style.RESET_ALL}")
+        else:
+            print(f"  转写文件夹: {Fore.LIGHTBLACK_EX}未设置（使用同名txt或模拟）{Style.RESET_ALL}")
         print(f"  录音文件数: {file_count} 个")
         print(f"  质检规则: {cat_name} | 成交筛选: {deal_name}")
         if self.current_batch:
@@ -93,7 +100,7 @@ class QACLI:
         print(f"  例: 朝阳店_张美丽_20240115_143000_dealt.wav\n")
 
         default_dir = self.current_dir or SAMPLES_DIR
-        directory = self.get_input("请输入文件夹路径", default_dir)
+        directory = self.get_input("请输入录音文件夹路径", default_dir)
 
         if not os.path.exists(directory):
             print(f"\n{Fore.RED}错误: 文件夹不存在 - {directory}{Style.RESET_ALL}")
@@ -108,27 +115,64 @@ class QACLI:
 
         self.current_dir = directory
 
-        print(f"\n{Fore.GREEN}✓ 找到 {len(files)} 个录音文件{Style.RESET_ALL}\n")
+        print(f"\n{Fore.GREEN}✓ 找到 {len(files)} 个录音文件{Style.RESET_ALL}")
 
-        sample_files = files[:10]
+        transcript_dir_default = self.transcript_dir if self.transcript_dir else "留空表示不设置"
+        transcript_input = self.get_input("\n请输入转写稿文件夹路径（留空则使用同名txt或模拟）", transcript_dir_default)
+        if transcript_input and transcript_input != "留空表示不设置":
+            if os.path.exists(transcript_input):
+                self.transcript_dir = transcript_input
+                self.importer.set_transcript_dir(transcript_input)
+                print(f"{Fore.GREEN}✓ 已设置转写文件夹{Style.RESET_ALL}")
+            else:
+                print(f"{Fore.YELLOW}⚠ 转写文件夹不存在，继续使用默认设置{Style.RESET_ALL}")
+                self.transcript_dir = None
+                self.importer.set_transcript_dir(None)
+        else:
+            self.transcript_dir = None
+            self.importer.set_transcript_dir(None)
+
+        fallback_choice = self.get_input("无转写稿时是否使用模拟数据？(y/n)", "y" if self.use_simulator_fallback else "n")
+        self.use_simulator_fallback = fallback_choice.lower() == "y"
+        self.importer.set_simulator_fallback(self.use_simulator_fallback)
+
+        self.importer.import_from_directory(self.current_dir, self.current_category, self.current_deal_filter)
+        stats = self.importer.get_transcript_stats()
+
+        print(f"\n{Style.BRIGHT}转写稿统计:{Style.RESET_ALL}")
+        print(f"  真实转写: {Fore.GREEN}{stats['real']} 个{Style.RESET_ALL}")
+        if stats['simulated'] > 0:
+            print(f"  模拟转写: {Fore.YELLOW}{stats['simulated']} 个{Style.RESET_ALL}")
+        if stats['failed'] > 0:
+            print(f"  导入失败: {Fore.RED}{stats['failed']} 个{Style.RESET_ALL}")
+
+        sample_files = files[:8]
         table_data = []
         for fname in sample_files:
             parsed = self.importer.parser.parse(fname)
             if parsed:
                 deal = "已成交" if parsed["deal"] == "dealt" else "未成交"
+                txt_name = os.path.splitext(fname)[0] + ".txt"
+                has_txt = os.path.exists(os.path.join(self.current_dir, txt_name))
+                if self.transcript_dir:
+                    has_txt = has_txt or os.path.exists(os.path.join(self.transcript_dir, txt_name))
+                source = "真实转写" if has_txt else ("模拟转写" if self.use_simulator_fallback else "无转写")
+                source_color = Fore.GREEN if has_txt else (Fore.YELLOW if self.use_simulator_fallback else Fore.RED)
                 table_data.append([
                     parsed["store"],
                     parsed["consultant"],
                     parsed["date"],
-                    deal
+                    deal,
+                    f"{source_color}{source}{Style.RESET_ALL}"
                 ])
             else:
-                table_data.append(["(格式不符)", fname, "", ""])
+                table_data.append(["(格式不符)", fname, "", "", ""])
 
-        print(tabulate(table_data, headers=["门店", "咨询师", "日期", "成交状态"], tablefmt="simple"))
+        print(f"\n{Style.BRIGHT}文件预览（前8个）:{Style.RESET_ALL}\n")
+        print(tabulate(table_data, headers=["门店", "咨询师", "日期", "成交状态", "转写来源"], tablefmt="simple"))
 
-        if len(files) > 10:
-            print(f"\n  ... 还有 {len(files) - 10} 个文件")
+        if len(files) > 8:
+            print(f"\n  ... 还有 {len(files) - 8} 个文件")
 
         self.pause()
 
@@ -200,6 +244,9 @@ class QACLI:
         print(f"\n{Fore.CYAN}正在加载录音文件...{Style.RESET_ALL}")
 
         try:
+            self.processor.importer.set_transcript_dir(self.transcript_dir)
+            self.processor.importer.set_simulator_fallback(self.use_simulator_fallback)
+
             batch = self.processor.process_directory(
                 name=self.current_batch_name,
                 directory=self.current_dir,
@@ -214,6 +261,7 @@ class QACLI:
                 return
 
             self.record_manager.save_batch(batch)
+            transcript_stats = self.processor.importer.get_transcript_stats()
 
             print(f"\n{Fore.GREEN}{Style.BRIGHT}✓ 质检完成！{Style.RESET_ALL}")
             print(f"\n  批次ID: {batch.batch_id}")
@@ -221,6 +269,12 @@ class QACLI:
             print(f"  通过数: {batch.passed_count}  ({batch.passed_count / batch.total_count * 100:.1f}%)")
             print(f"  异常数: {batch.failed_count}  ({batch.failed_count / batch.total_count * 100:.1f}%)")
             print(f"  平均得分: {sum(r.total_score for r in batch.results) / batch.total_count:.1f}")
+            print(f"\n  转写来源:")
+            print(f"    真实转写: {Fore.GREEN}{transcript_stats['real']} 个{Style.RESET_ALL}")
+            if transcript_stats['simulated'] > 0:
+                print(f"    模拟转写: {Fore.YELLOW}{transcript_stats['simulated']} 个{Style.RESET_ALL}")
+            if transcript_stats['failed'] > 0:
+                print(f"    导入失败: {Fore.RED}{transcript_stats['failed']} 个{Style.RESET_ALL}")
 
             duration = (batch.end_time - batch.start_time).total_seconds() if batch.end_time else 0
             print(f"  耗时: {duration:.1f} 秒")
@@ -243,38 +297,47 @@ class QACLI:
 
         low_scores = self.analyzer.get_low_score_list(self.current_batch)
 
-        print(f"{Style.BRIGHT}低分录音（<{LOW_SCORE_THRESHOLD}分）共 {len(low_scores)} 个{Style.RESET_ALL}\n")
+        print(f"{Style.BRIGHT}低分录音（<{LOW_SCORE_THRESHOLD}分）共 {len(low_scores)} 个{Style.RESET_ALL}")
+        print(f"{Fore.LIGHTBLACK_EX}提示: 文件路径可直接复制用于精听{Style.RESET_ALL}\n")
 
         if not low_scores:
             print(f"{Fore.GREEN}太棒了！本次质检没有低分录音{Style.RESET_ALL}")
         else:
             table_data = []
-            for i, result in enumerate(low_scores[:20], 1):
+            for i, result in enumerate(low_scores[:15], 1):
                 rec = result.recording
                 deal = "已成交" if rec.is_dealt else "未成交"
-                issues_str = "; ".join(result.issues[:3])
-                if len(result.issues) > 3:
-                    issues_str += f" ...(+{len(result.issues) - 3})"
+                issues_str = "; ".join(result.issues[:2])
+                if len(result.issues) > 2:
+                    issues_str += f" ...(+{len(result.issues) - 2})"
+                source = "真实" if getattr(rec, "transcript_source", "simulated") == "real" else "模拟"
                 table_data.append([
                     i,
                     rec.store,
                     rec.consultant,
                     deal,
                     result.total_score,
+                    source,
                     issues_str,
-                    rec.file_name
                 ])
 
             print(tabulate(
                 table_data,
-                headers=["序号", "门店", "咨询师", "成交", "得分", "主要问题", "文件名"],
+                headers=["#", "门店", "咨询师", "成交", "得分", "转写", "主要问题"],
                 tablefmt="simple"
             ))
 
-            if len(low_scores) > 20:
-                print(f"\n  ... 还有 {len(low_scores) - 20} 个低分录音")
+            print(f"\n{Style.BRIGHT}📂 低分录音完整路径（按得分升序）:{Style.RESET_ALL}\n")
+            for i, result in enumerate(low_scores[:15], 1):
+                rec = result.recording
+                score_color = Fore.RED if result.total_score < 40 else Fore.YELLOW
+                print(f"  {i:2d}. [{score_color}{result.total_score}分{Style.RESET_ALL}] {rec.store} - {rec.consultant}")
+                print(f"     {Fore.CYAN}{rec.file_path}{Style.RESET_ALL}")
 
-        print(f"\n{Style.BRIGHT}问题类型统计:{Style.RESET_ALL}\n")
+            if len(low_scores) > 15:
+                print(f"\n  ... 还有 {len(low_scores) - 15} 个低分录音，详见导出表格")
+
+        print(f"\n{Style.BRIGHT}问题类型统计 Top10:{Style.RESET_ALL}\n")
         top_issues = self.analyzer.get_top_issues(self.current_batch, top_n=10)
         table_data = []
         for i, (issue, count) in enumerate(top_issues, 1):
@@ -441,21 +504,51 @@ class QACLI:
             tablefmt="simple"
         ))
 
-        choice = self.get_input("\n输入序号加载该批次，回车返回", "")
-        if choice.isdigit() and 1 <= int(choice) <= len(records):
-            self._load_history(records[int(choice) - 1])
+        print(f"\n{Style.BRIGHT}操作选项:{Style.RESET_ALL}")
+        print(f"  [1] 加载某个批次查看详情")
+        print(f"  [2] 选择两个批次进行对比")
+        print(f"  [0] 返回主菜单")
+
+        choice = self.get_input("\n请选择操作", "1")
+
+        if choice == "1":
+            idx = self.get_input("请输入批次序号", "1")
+            if idx.isdigit() and 1 <= int(idx) <= len(records):
+                self._load_history(records[int(idx) - 1])
+        elif choice == "2":
+            if len(records) < 2:
+                print(f"\n{Fore.YELLOW}至少需要2个批次才能对比{Style.RESET_ALL}")
+                self.pause()
+                return
+
+            idx1 = self.get_input("请输入第一个批次序号（较旧）", "1")
+            idx2 = self.get_input("请输入第二个批次序号（较新）", "2")
+
+            if idx1.isdigit() and idx2.isdigit() \
+               and 1 <= int(idx1) <= len(records) \
+               and 1 <= int(idx2) <= len(records) \
+               and idx1 != idx2:
+
+                batch_a = self._load_batch_to_memory(records[int(idx1) - 1])
+                batch_b = self._load_batch_to_memory(records[int(idx2) - 1])
+
+                if batch_a and batch_b:
+                    self._show_comparison(batch_a, batch_b)
+                else:
+                    print(f"\n{Fore.RED}批次加载失败{Style.RESET_ALL}")
+            else:
+                print(f"\n{Fore.YELLOW}序号无效{Style.RESET_ALL}")
 
         self.pause()
 
-    def _load_history(self, record_info: dict):
+    def _load_batch_to_memory(self, record_info: dict) -> object:
+        from models import Recording, RecordingQAResult, CheckItemResult, BatchRecord
+
         batch_id = record_info["batch_id"]
         data = self.record_manager.load_batch(batch_id)
 
         if not data:
-            print(f"{Fore.RED}加载失败{Style.RESET_ALL}")
-            return
-
-        from models import Recording, RecordingQAResult, CheckItemResult, BatchRecord
+            return None
 
         batch = BatchRecord(
             batch_id=data["batch_id"],
@@ -507,13 +600,117 @@ class QACLI:
             )
             batch.results.append(result)
 
-        self.current_batch = batch
-        self.current_batch_name = data["batch_name"]
-        self.current_category = data["rule_category"]
-        self.current_deal_filter = data["deal_filter"]
+        return batch
 
-        print(f"\n{Fore.GREEN}✓ 已加载批次: {data['batch_name']}{Style.RESET_ALL}")
-        print(f"  可在【异常清单】【门店汇总】【结果导出】中查看")
+    def _load_history(self, record_info: dict):
+        batch = self._load_batch_to_memory(record_info)
+        if batch:
+            self.current_batch = batch
+            self.current_batch_name = record_info["batch_name"]
+            self.current_category = record_info["rule_category"]
+            self.current_deal_filter = record_info["deal_filter"]
+
+            print(f"\n{Fore.GREEN}✓ 已加载批次: {record_info['batch_name']}{Style.RESET_ALL}")
+            print(f"  可在【异常清单】【门店汇总】【结果导出】中查看")
+        else:
+            print(f"\n{Fore.RED}加载失败{Style.RESET_ALL}")
+
+    def _show_comparison(self, batch_a, batch_b):
+        self.clear_screen()
+        self.print_header()
+        print(f"\n{Fore.YELLOW}{Style.BRIGHT}【 批次对比 】{Style.RESET_ALL}")
+        print(f"\n  {batch_a.batch_name}  →  {batch_b.batch_name}\n")
+
+        result = self.comparator.compare_batches(batch_a, batch_b)
+
+        a = result["batch_a"]
+        b = result["batch_b"]
+
+        print(f"{Style.BRIGHT}📊 总体指标对比:{Style.RESET_ALL}\n")
+
+        diff_color = Fore.GREEN if b['pass_rate'] >= a['pass_rate'] else Fore.RED
+        diff_sign = "+" if (b['pass_rate'] - a['pass_rate']) >= 0 else ""
+
+        table_data = [
+            ["录音总数", a['total'], b['total'],
+             self._format_diff_num(b['total'] - a['total'])],
+            ["通过数", a['passed'], b['passed'],
+             self._format_diff_num(b['passed'] - a['passed'], good='+')],
+            ["低分异常数", a['low_count'], b['low_count'],
+             self._format_diff_num(b['low_count'] - a['low_count'], good='-')],
+            ["通过率", f"{a['pass_rate']}%", f"{b['pass_rate']}%",
+             f"{diff_color}{diff_sign}{round(b['pass_rate'] - a['pass_rate'], 1)}%{Style.RESET_ALL}"],
+            ["平均分", a['avg_score'], b['avg_score'],
+             self._format_diff_num(round(b['avg_score'] - a['avg_score'], 1), good='+')],
+        ]
+
+        print(tabulate(table_data, headers=["指标", a['name'], b['name'], "变化"], tablefmt="simple"))
+
+        print(f"\n{Style.BRIGHT}🏪 门店平均分对比（按变化升序）:{Style.RESET_ALL}\n")
+
+        store_comparison = sorted(
+            result["store_comparison"],
+            key=lambda x: x["avg_diff"] if x["avg_diff"] is not None else -999
+        )
+
+        store_table = []
+        for sc in store_comparison:
+            diff_str = self._format_diff_num(sc["avg_diff"], good='+') if sc["avg_diff"] is not None else "-"
+            store_table.append([
+                sc["store"],
+                sc["avg_a"] if sc["avg_a"] is not None else "-",
+                sc["avg_b"] if sc["avg_b"] is not None else "-",
+                diff_str,
+            ])
+
+        print(tabulate(store_table, headers=["门店", f"{a['name']}(分)", f"{b['name']}(分)", "变化"], tablefmt="simple"))
+
+        print(f"\n{Style.BRIGHT}🔝 问题类型 Top10 对比:{Style.RESET_ALL}\n")
+
+        issue_table = []
+        for i, ic in enumerate(result["issue_comparison"], 1):
+            diff_str = self._format_diff_num(ic["diff"], good='-')
+            issue_table.append([
+                i,
+                ic["issue"],
+                ic["count_a"],
+                ic["count_b"],
+                diff_str,
+            ])
+
+        print(tabulate(issue_table, headers=["排名", "问题类型", a['name'], b['name'], "变化"], tablefmt="simple"))
+
+        print(f"\n{Style.BRIGHT}操作选项:{Style.RESET_ALL}")
+        print(f"  [1] 导出对比表到 Excel（用于周会复盘）")
+        print(f"  [2] 将较新批次设为当前批次")
+        print(f"  [0] 返回")
+
+        choice = self.get_input("\n请选择操作", "0")
+        if choice == "1":
+            try:
+                filepath = self.exporter.export_comparison(batch_a, batch_b, self.analyzer)
+                print(f"\n{Fore.GREEN}{Style.BRIGHT}✓ 对比表导出成功！{Style.RESET_ALL}")
+                print(f"  文件路径: {Fore.CYAN}{filepath}{Style.RESET_ALL}")
+            except Exception as e:
+                print(f"\n{Fore.RED}导出失败: {e}{Style.RESET_ALL}")
+        elif choice == "2":
+            self.current_batch = batch_b
+            self.current_batch_name = batch_b.batch_name
+            self.current_category = batch_b.rule_category
+            self.current_deal_filter = batch_b.deal_filter
+            print(f"\n{Fore.GREEN}✓ 已将 [{batch_b.batch_name}] 设为当前批次{Style.RESET_ALL}")
+
+    def _format_diff_num(self, value, good='+'):
+        if value is None:
+            return "-"
+        if value > 0:
+            color = Fore.GREEN if good == '+' else Fore.RED
+            return f"{color}+{value}{Style.RESET_ALL}"
+        elif value < 0:
+            color = Fore.RED if good == '+' else Fore.GREEN
+            return f"{color}{value}{Style.RESET_ALL}"
+        else:
+            return "0"
 
     # ===== 主循环 =====
     def run(self):
