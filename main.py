@@ -269,6 +269,136 @@ class QACLI:
         print(f"  缺txt录音: {len(missing_info['missing_txt'])} 个 | 多出txt: {len(missing_info['orphan_txt'])} 个")
         print(f"  请将此文件发给数据同事补充转写")
 
+    def _export_review_task_list(self, store: str, consultant: str, low_recordings: list, batches: list):
+        from openpyxl import Workbook
+        from openpyxl.styles import Font, PatternFill
+
+        os.makedirs(EXPORTS_DIR, exist_ok=True)
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        filename = f"复听任务清单_{store}_{consultant}_{timestamp}.xlsx"
+        filepath = os.path.join(EXPORTS_DIR, filename)
+
+        wb = Workbook()
+        header_font = Font(bold=True, color="FFFFFF", size=11)
+        header_fill = PatternFill(start_color="1F4E78", end_color="1F4E78", fill_type="solid")
+
+        ws1 = wb.active
+        ws1.title = "按问题类型分组"
+        ws1.merge_cells("A1:H1")
+        ws1["A1"] = f"复听任务清单 - {store} - {consultant}"
+        ws1["A1"].font = Font(bold=True, size=14, color="1F4E78")
+
+        headers = ["分组", "#", "分数", "批次", "问题类型", "文件名", "完整路径", "已复核"]
+        for col, h in enumerate(headers, 1):
+            cell = ws1.cell(row=3, column=col, value=h)
+            cell.font = header_font
+            cell.fill = header_fill
+
+        by_issue = defaultdict(list)
+        for lr in low_recordings:
+            for issue in lr["issues"]:
+                by_issue[issue].append(lr)
+
+        row = 4
+        idx = 1
+        for issue, records in sorted(by_issue.items(), key=lambda x: len(x[1]), reverse=True):
+            sorted_records = sorted(records, key=lambda x: x["score"])
+            for i, lr in enumerate(sorted_records):
+                ws1.cell(row=row, column=1, value=issue if i == 0 else "")
+                ws1.cell(row=row, column=2, value=idx)
+                score_cell = ws1.cell(row=row, column=3, value=lr["score"])
+                score_cell.font = Font(color="C00000", bold=True)
+                ws1.cell(row=row, column=4, value=lr["batch_name"])
+                ws1.cell(row=row, column=5, value="; ".join(lr["issues"]))
+                ws1.cell(row=row, column=6, value=lr["file_name"])
+                ws1.cell(row=row, column=7, value=lr["file_path"])
+                ws1.cell(row=row, column=8, value="")
+                row += 1
+                idx += 1
+
+        ws1.column_dimensions["A"].width = 25
+        ws1.column_dimensions["B"].width = 6
+        ws1.column_dimensions["C"].width = 8
+        ws1.column_dimensions["D"].width = 18
+        ws1.column_dimensions["E"].width = 30
+        ws1.column_dimensions["F"].width = 40
+        ws1.column_dimensions["G"].width = 60
+        ws1.column_dimensions["H"].width = 10
+
+        ws2 = wb.create_sheet("按批次分组")
+        ws2.merge_cells("A1:H1")
+        ws2["A1"] = f"复听任务清单 - 按批次分组 - {store} - {consultant}"
+        ws2["A1"].font = Font(bold=True, size=14, color="1F4E78")
+
+        headers2 = ["分组", "#", "分数", "问题类型", "文件名", "完整路径", "已复核"]
+        for col, h in enumerate(headers2, 1):
+            cell = ws2.cell(row=3, column=col, value=h)
+            cell.font = header_font
+            cell.fill = header_fill
+
+        row = 4
+        idx = 1
+        by_batch = defaultdict(list)
+        for lr in low_recordings:
+            by_batch[lr["batch_name"]].append(lr)
+        for batch in batches:
+            if batch.batch_name in by_batch:
+                records = sorted(by_batch[batch.batch_name], key=lambda x: x["score"])
+                for i, lr in enumerate(records):
+                    ws2.cell(row=row, column=1, value=batch.batch_name if i == 0 else "")
+                    ws2.cell(row=row, column=2, value=idx)
+                    score_cell = ws2.cell(row=row, column=3, value=lr["score"])
+                    score_cell.font = Font(color="C00000", bold=True)
+                    ws2.cell(row=row, column=4, value="; ".join(lr["issues"]))
+                    ws2.cell(row=row, column=5, value=lr["file_name"])
+                    ws2.cell(row=row, column=6, value=lr["file_path"])
+                    ws2.cell(row=row, column=7, value="")
+                    row += 1
+                    idx += 1
+
+        ws2.column_dimensions["A"].width = 20
+        ws2.column_dimensions["B"].width = 6
+        ws2.column_dimensions["C"].width = 8
+        ws2.column_dimensions["D"].width = 30
+        ws2.column_dimensions["E"].width = 40
+        ws2.column_dimensions["F"].width = 60
+        ws2.column_dimensions["G"].width = 10
+
+        ws3 = wb.create_sheet("按分数排序")
+        ws3.merge_cells("A1:G1")
+        ws3["A1"] = f"复听任务清单 - 按分数排序 - {store} - {consultant}"
+        ws3["A1"].font = Font(bold=True, size=14, color="1F4E78")
+
+        headers3 = ["#", "分数", "批次", "问题类型", "文件名", "完整路径", "已复核"]
+        for col, h in enumerate(headers3, 1):
+            cell = ws3.cell(row=3, column=col, value=h)
+            cell.font = header_font
+            cell.fill = header_fill
+
+        row = 4
+        sorted_by_score = sorted(low_recordings, key=lambda x: x["score"])
+        for i, lr in enumerate(sorted_by_score, 1):
+            ws3.cell(row=row, column=1, value=i)
+            score_cell = ws3.cell(row=row, column=2, value=lr["score"])
+            score_cell.font = Font(color="C00000", bold=True)
+            ws3.cell(row=row, column=3, value=lr["batch_name"])
+            ws3.cell(row=row, column=4, value="; ".join(lr["issues"]))
+            ws3.cell(row=row, column=5, value=lr["file_name"])
+            ws3.cell(row=row, column=6, value=lr["file_path"])
+            ws3.cell(row=row, column=7, value="")
+            row += 1
+
+        ws3.column_dimensions["A"].width = 6
+        ws3.column_dimensions["B"].width = 8
+        ws3.column_dimensions["C"].width = 18
+        ws3.column_dimensions["D"].width = 30
+        ws3.column_dimensions["E"].width = 40
+        ws3.column_dimensions["F"].width = 60
+        ws3.column_dimensions["G"].width = 10
+
+        wb.save(filepath)
+        return filepath
+
     # ===== 操作2: 规则选择 =====
     def action_rules(self):
         self.clear_screen()
@@ -1018,19 +1148,30 @@ class QACLI:
         print(f"  [0] 返回")
 
         choice = self.get_input("\n请选择操作", "0")
-        if choice == "1" and len(result.get("batch_objects", [])) >= 2:
-            batch_objs = result["batch_objects"]
+        batch_objs = result.get("batch_objects", [])
+        if choice == "1" and len(batch_objs) >= 1:
             try:
-                filepath = self.weekly_analyzer.export_weekly_package(
-                    result, self.exporter, batch_objs[0], batch_objs[-1]
-                )
+                if len(batch_objs) == 1:
+                    filepath = self.weekly_analyzer.export_weekly_package(
+                        result, self.exporter, batch_objs[0]
+                    )
+                else:
+                    filepath = self.weekly_analyzer.export_weekly_package(
+                        result, self.exporter, batch_objs[0], batch_objs[-1]
+                    )
                 print(f"\n{Fore.GREEN}{Style.BRIGHT}✓ 周会包导出成功！{Style.RESET_ALL}")
-                print(f"  文件路径: {Fore.CYAN}{filepath}{Style.RESET_ALL}")
-                print(f"  包含: 对比总览、门店对比、问题对比、咨询师对比、周趋势、风险门店、退步咨询师、反复问题")
+                print(f"  {Fore.CYAN}{filepath}{Style.RESET_ALL}")
+                sheet_names = ["复盘摘要"]
+                if len(batch_objs) >= 2:
+                    sheet_names += ["对比总览", "门店对比", "问题对比", "咨询师对比"]
+                else:
+                    sheet_names += ["复核总览", "问题清单", "门店汇总", "明细"]
+                sheet_names += ["周趋势", "风险门店", "退步咨询师", "反复问题", "建议复听清单"]
+                print(f"  包含工作表: {', '.join(sheet_names)}")
             except Exception as e:
                 print(f"\n{Fore.RED}导出失败: {e}{Style.RESET_ALL}")
         elif choice == "1":
-            print(f"\n{Fore.YELLOW}至少需要2个批次才能导出周会包{Style.RESET_ALL}")
+            print(f"\n{Fore.YELLOW}没有批次数据可以导出{Style.RESET_ALL}")
 
         self.pause()
 
@@ -1125,14 +1266,16 @@ class QACLI:
             self.pause()
             return
 
+        batches.sort(key=lambda b: b.start_time)
+
         trend = self.comparator.get_consultant_trend(batches, store, consultant)
 
         self.clear_screen()
         self.print_header()
         print(f"\n{Fore.YELLOW}{Style.BRIGHT}【 咨询师下钻 】{Style.RESET_ALL}")
-        print(f"  {store} - {consultant}  跨 {trend['batch_count']} 个批次\n")
+        print(f"  {store} - {consultant}  跨 {trend['batch_count']} 个批次 (按时间从早到晚)\n")
 
-        print(f"{Style.BRIGHT}📈 分数走势:{Style.RESET_ALL}\n")
+        print(f"{Style.BRIGHT}📈 分数走势 (早→晚):{Style.RESET_ALL}\n")
         trend_table = []
         for t in trend["trend"]:
             score_bar_len = int(t["avg_score"] / 5)
@@ -1149,31 +1292,70 @@ class QACLI:
 
         print(tabulate(trend_table, headers=["批次", "均分", "分布", "低分", "录音", "主要问题"], tablefmt="simple"))
 
-        print(f"\n{Style.BRIGHT}🎧 低分录音样本（可直接复制路径复听）:{Style.RESET_ALL}\n")
+        print(f"\n{Style.BRIGHT}🎧 低分录音样本（按批次分组，可直接复制路径复听）:{Style.RESET_ALL}\n")
+        all_low_recordings = []
         for t in trend["trend"]:
             if t["low_recordings"]:
-                print(f"  {Style.BRIGHT}[{t['batch_name']}]{Style.RESET_ALL}")
+                print(f"  {Style.BRIGHT}[{t['batch_name']}]{Style.RESET_ALL} ({len(t['low_recordings'])}个低分)")
                 for lr in t["low_recordings"][:5]:
                     score_color = Fore.RED if lr["score"] < 40 else Fore.YELLOW
                     print(f"    {score_color}{lr['score']}分{Style.RESET_ALL}  {lr['file_name']}")
                     print(f"    {Fore.CYAN}{lr['file_path']}{Style.RESET_ALL}")
                     if lr["issues"]:
                         print(f"    {Fore.LIGHTBLACK_EX}问题: {'; '.join(lr['issues'][:2])}{Style.RESET_ALL}")
+                    lr["batch_name"] = t["batch_name"]
+                    lr["store"] = store
+                    lr["consultant"] = consultant
+                    all_low_recordings.append(lr)
                 print()
 
-        print(f"\n{Style.BRIGHT}🔄 高频问题变化:{Style.RESET_ALL}\n")
+        print(f"\n{Style.BRIGHT}🔄 高频问题变化 (按时间顺序):{Style.RESET_ALL}\n")
         all_issues_timeline = defaultdict(list)
         for t in trend["trend"]:
+            batch_issue_counts = dict(t["top_issues"])
+            for issue in all_issues_timeline.keys():
+                all_issues_timeline[issue].append(batch_issue_counts.get(issue, 0))
             for issue, count in t["top_issues"]:
-                all_issues_timeline[issue].append(count)
+                if issue not in all_issues_timeline:
+                    all_issues_timeline[issue] = [0] * (len(all_issues_timeline[list(all_issues_timeline.keys())[0]]) if all_issues_timeline else 0) + [count]
 
         issue_table = []
         for issue, counts in sorted(all_issues_timeline.items(), key=lambda x: sum(x[1]), reverse=True):
             trend_str = " → ".join(str(c) for c in counts)
-            direction = "↑" if counts[-1] > counts[0] else ("↓" if counts[-1] < counts[0] else "—")
+            if len(counts) >= 2:
+                direction = "↑" if counts[-1] > counts[0] else ("↓" if counts[-1] < counts[0] else "—")
+            else:
+                direction = "—"
             issue_table.append([issue, trend_str, direction])
 
         print(tabulate(issue_table, headers=["问题类型", "各批次次数", "趋势"], tablefmt="simple"))
+
+        if all_low_recordings:
+            print(f"\n{Style.BRIGHT}📋 复听任务清单（按问题类型分组）:{Style.RESET_ALL}\n")
+            by_issue = defaultdict(list)
+            for lr in all_low_recordings:
+                for issue in lr["issues"]:
+                    by_issue[issue].append(lr)
+
+            for issue, records in sorted(by_issue.items(), key=lambda x: len(x[1]), reverse=True):
+                print(f"  {Style.BRIGHT}【{issue}】{Style.RESET_ALL} ({len(records)}条)")
+                for lr in records[:3]:
+                    print(f"    {Fore.YELLOW}{lr['score']}分{Style.RESET_ALL} [{lr['batch_name']}] {lr['file_name']}")
+                if len(records) > 3:
+                    print(f"    ... 还有 {len(records) - 3} 条")
+                print()
+
+            print(f"\n{Style.BRIGHT}操作选项:{Style.RESET_ALL}")
+            print(f"  [1] 导出复听任务清单（按问题类型/批次/分数分组）")
+            print(f"  [0] 返回")
+
+            choice = self.get_input("\n请选择操作", "0")
+            if choice == "1":
+                filepath = self._export_review_task_list(store, consultant, all_low_recordings, batches)
+                print(f"\n{Fore.GREEN}{Style.BRIGHT}✓ 复听任务清单导出成功！{Style.RESET_ALL}")
+                print(f"  {Fore.CYAN}{filepath}{Style.RESET_ALL}")
+                self.pause()
+            return
 
         self.pause()
 
